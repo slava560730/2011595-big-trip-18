@@ -1,7 +1,7 @@
 # Проект «Большое путешествие»
 
-* Студент: [Вячеслав Петров](https://up.htmlacademy.ru/ecmascript/18/user/2011595).
-* Наставник: `Неизвестно`.
+- Студент: [Вячеслав Петров](https://up.htmlacademy.ru/ecmascript/18/user/2011595).
+- Наставник: [Юлия Корецкая](https://htmlacademy.ru/profile/id11886).
 
 ---
 

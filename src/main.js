@@ -9,5 +9,6 @@ const tripEventsElement = siteMainElement.querySelector('.trip-events');
 
 const headerPresenter = new HeaderPresenter();
 const tripEventsPresenter = new TripEventsPresenter();
+
 headerPresenter.init(tripMainElement, tripFiltersElement);
 tripEventsPresenter.init(tripEventsElement);

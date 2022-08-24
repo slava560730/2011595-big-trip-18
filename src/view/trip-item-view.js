@@ -1,8 +1,5 @@
-import { createElement } from '../render.js';
-import {
-  humanizeTime,
-  humanizeDate,
-} from '../utils.js';
+import {createElement} from '../render.js';
+import {humanizeDate, humanizeTime} from '../utils.js';
 
 const createOfferTemplate = (offer) => `
     <li class="event__offer">
@@ -12,24 +9,41 @@ const createOfferTemplate = (offer) => `
     </li>
   `;
 
-const createOffersTemplate = (offers) => offers.map(createOfferTemplate).join('');
+const createTripItemTemplate = (points, offersData, destinationsData, offersByTypeData) => {
+  const { basePrice, type, dateFrom, dateTo, destination, isFavorite, offers } = points;
 
-const createTripItemTemplate = ({basePrice, type, dateFrom, dateTo, destination, isFavorite, offers}) => {
+  const createOffersTemplate = () => {
+    const offerByPointType = offersByTypeData.find((offer) => offer.type === type);
+
+    return offers
+      .map((offerId) => {
+        const selectedOffer = offerByPointType.offers.find((el) => (el.id === offerId));
+
+        return createOfferTemplate(selectedOffer);
+      })
+      .join('');
+  };
+
   const humanizedDateFrom = dateFrom !== null ? humanizeDate(dateFrom) : '';
   const humanizedTimeFrom = dateFrom !== null ? humanizeTime(dateFrom) : '';
   const humanizedTimeTo = dateTo !== null ? humanizeTime(dateTo) : '';
 
-  const favoriteClassName = isFavorite ? 'event__favorite-btn event__favorite-btn--active' : 'event__favorite-btn';
+  const name = destinationsData.find((el) => (el.id === destination)).name;
 
-  const offersTemplate = createOffersTemplate(offers);
 
-  return (`<li class="trip-events__item">
+  const favoriteClassName = isFavorite
+    ? 'event__favorite-btn event__favorite-btn--active'
+    : 'event__favorite-btn';
+
+  const offersTemplate = createOffersTemplate();
+
+  return `<li class="trip-events__item">
               <div class="event">
                 <time class="event__date" datetime="${dateFrom}">${humanizedDateFrom}</time>
                 <div class="event__type">
                   <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
                 </div>
-                <h3 class="event__title">${type} ${destination.name}</h3>
+                <h3 class="event__title">${type} ${name}</h3>
                 <div class="event__schedule">
                   <p class="event__time">
                     <time class="event__start-time" datetime="${dateFrom}">${humanizedTimeFrom}</time>
@@ -55,16 +69,19 @@ ${offersTemplate}
                   <span class="visually-hidden">Open event</span>
                 </button>
               </div>
-            </li>`);
+            </li>`;
 };
 
 export default class TripItemView {
-  constructor(point) {
+  constructor(point, offer, destination, offerByType) {
     this.point = point;
+    this.offer = offer;
+    this.destination = destination;
+    this.offerByType = offerByType;
   }
 
   getTemplate() {
-    return createTripItemTemplate(this.point);
+    return createTripItemTemplate(this.point, this.offer, this.destination, this.offerByType);
   }
 
   getElement() {

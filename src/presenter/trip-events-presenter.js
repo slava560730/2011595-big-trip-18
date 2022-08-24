@@ -7,21 +7,44 @@ import TripItemView from '../view/trip-item-view.js';
 export default class TripEventsPresenter {
   tripList = new TripListView();
 
-  init = (tripEventsContainer, pointsModel) => {
+  init = (tripEventsContainer, pointsModel, offersModel, destinationsModel, offersByTypeModel) => {
     this.tripEventsContainer = tripEventsContainer;
+
     this.pointsModel = pointsModel;
     this.tripPoints = [...this.pointsModel.getPoints()];
+
+    this.offersModel = offersModel;
+    this.tripOffers = [...this.offersModel.getOffers()];
+
+    this.destinationsModel = destinationsModel;
+    this.tripDestinations = [...this.destinationsModel.getDestinations()];
+
+    this.offersByTypeModel = offersByTypeModel;
+    this.tripOffersByType = [...this.offersByTypeModel.getOffersByType()];
 
     render(new TripSortView(), this.tripEventsContainer);
     render(this.tripList, this.tripEventsContainer);
     render(
-      new EditPointView(this.tripPoints[0]),
+      new EditPointView(
+        this.tripPoints[0],
+        this.tripOffers,
+        this.tripDestinations,
+        this.tripOffersByType
+      ),
       this.tripList.getElement(),
       RenderPosition.AFTERBEGIN
     );
 
     for (let i = 0; i < this.tripPoints.length; i++) {
-      render(new TripItemView(this.tripPoints[i]), this.tripList.getElement());
+      render(
+        new TripItemView(
+          this.tripPoints[i],
+          this.tripOffers,
+          this.tripDestinations,
+          this.tripOffersByType
+        ),
+        this.tripList.getElement()
+      );
     }
   };
 }

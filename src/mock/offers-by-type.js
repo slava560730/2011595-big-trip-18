@@ -1,7 +1,7 @@
 import { getRandomArrayElement, getRandomInteger } from '../utils.js';
-import { OFFER_TITLES, OFFER_TYPES, PriceRange} from './const.js';
+import { OFFER_TITLES, OFFER_TYPES, PriceRange } from './const.js';
 
-export const generateOffer = () => ({
+export const generateOffersByType = () => ({
   type: getRandomArrayElement(OFFER_TYPES),
   offers: [
     {

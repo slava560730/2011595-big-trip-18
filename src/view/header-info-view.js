@@ -13,19 +13,21 @@ const createInfoTemplate = () => `<section class="trip-main__trip-info  trip-inf
           </section>`;
 
 export default class HeaderInfoView {
-  getTemplate() {
+  #element = null;
+
+  get template() {
     return createInfoTemplate();
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
     }
 
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }

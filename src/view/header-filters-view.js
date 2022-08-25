@@ -1,4 +1,4 @@
-import {createElement} from '../render.js';
+import { createElement } from '../render.js';
 
 const createFiltersTemplate = () => `<form class="trip-filters" action="#" method="get">
                 <div class="trip-filters__filter">
@@ -20,19 +20,21 @@ const createFiltersTemplate = () => `<form class="trip-filters" action="#" metho
               </form>`;
 
 export default class HeaderFiltersView {
-  getTemplate() {
+  #element;
+
+  get template() {
     return createFiltersTemplate();
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
     }
 
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }

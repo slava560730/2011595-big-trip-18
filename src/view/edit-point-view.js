@@ -12,17 +12,6 @@ const createEditPointTemplate = (points, offersData, destinationsData, offersByT
   const humanizedEditDateFrom = dateFrom !== null ? humanizeEditDate(dateFrom) : '';
   const humanizedEditDateTo = dateFrom !== null ? humanizeEditDate(dateTo) : '';
 
-  // const createPhotosTemplate = (data) =>
-  //   data.reduce((previousPic, picture) => {
-  //     const src = picture.src;
-  //     const pictureDescription = picture.description;
-  //
-  //     return `
-  //       ${previousPic}
-  //       <img class="event__photo" src="${src}" alt="${pictureDescription}">
-  //     `;
-  //   }, '');
-
   const createPhotoTemplate = (src, pictureDescription) =>
     `<img class="event__photo" src="${src}" alt="${pictureDescription}">`;
 
@@ -55,7 +44,7 @@ const createEditPointTemplate = (points, offersData, destinationsData, offersByT
 
   const createOfferEditTemplate = (offer) => `
                       <div class="event__offer-selector">
-                        <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage"
+                      <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage"
                         ${isOfferChecked(offer)}>
                         <label class="event__offer-label" for="event-offer-luggage-1">
                           <span class="event__offer-title">${offer.title}</span>
@@ -153,26 +142,33 @@ const createEditPointTemplate = (points, offersData, destinationsData, offersByT
 };
 
 export default class EditPointView {
+  #point = null;
+  #offer = null;
+  #destination = null;
+  #offerByType = null;
+
+  #element = null;
+
   constructor(point, offer, destination, offerByType) {
-    this.point = point;
-    this.offer = offer;
-    this.destination = destination;
-    this.offerByType = offerByType;
+    this.#point = point;
+    this.#offer = offer;
+    this.#destination = destination;
+    this.#offerByType = offerByType;
   }
 
-  getTemplate() {
-    return createEditPointTemplate(this.point, this.offer, this.destination, this.offerByType);
+  get template() {
+    return createEditPointTemplate(this.#point, this.#offer, this.#destination, this.#offerByType);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
     }
 
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }

@@ -165,19 +165,33 @@ const createAddEventTemplate = () => `<li class="trip-events__item">
 `;
 
 export default class AddEventView {
-  getTemplate() {
-    return createAddEventTemplate();
+  #point = null;
+  #offer = null;
+  #destination = null;
+  #offerByType = null;
+
+  #element = null;
+
+  constructor(point, offer, destination, offerByType) {
+    this.#point = point;
+    this.#offer = offer;
+    this.#destination = destination;
+    this.#offerByType = offerByType;
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get template() {
+    return createAddEventTemplate(this.#point, this.#offer, this.#destination, this.#offerByType);
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
     }
 
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }

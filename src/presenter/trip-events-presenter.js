@@ -35,16 +35,11 @@ export default class TripEventsPresenter {
       RenderPosition.AFTERBEGIN
     );
 
-    for (let i = 0; i < this.tripPoints.length; i++) {
+    this.tripPoints.forEach((point) => {
       render(
-        new TripItemView(
-          this.tripPoints[i],
-          this.tripOffers,
-          this.tripDestinations,
-          this.tripOffersByType
-        ),
+        new TripItemView(point, this.tripOffers, this.tripDestinations, this.tripOffersByType),
         this.tripList.getElement()
       );
-    }
+    });
   };
 }

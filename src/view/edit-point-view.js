@@ -12,16 +12,28 @@ const createEditPointTemplate = (points, offersData, destinationsData, offersByT
   const humanizedEditDateFrom = dateFrom !== null ? humanizeEditDate(dateFrom) : '';
   const humanizedEditDateTo = dateFrom !== null ? humanizeEditDate(dateTo) : '';
 
-  const createPhotosTemplate = (data) =>
-    data.reduce((previousPic, picture) => {
-      const src = picture.src;
-      const pictureDescription = picture.description;
+  // const createPhotosTemplate = (data) =>
+  //   data.reduce((previousPic, picture) => {
+  //     const src = picture.src;
+  //     const pictureDescription = picture.description;
+  //
+  //     return `
+  //       ${previousPic}
+  //       <img class="event__photo" src="${src}" alt="${pictureDescription}">
+  //     `;
+  //   }, '');
 
-      return `
-        ${previousPic}
-        <img class="event__photo" src="${src}" alt="${pictureDescription}">
-      `;
-    }, '');
+  const createPhotoTemplate = (src, pictureDescription) =>
+    `<img class="event__photo" src="${src}" alt="${pictureDescription}">`;
+
+  const createPhotosTemplate = (data) =>
+    data
+      .map((picture) => {
+        const src = picture.src;
+        const pictureDescription = picture.description;
+        return createPhotoTemplate(src, pictureDescription);
+      })
+      .join('');
 
   const isTypeChecked = (checkedType, currentType) =>
     currentType === checkedType ? 'checked' : '';

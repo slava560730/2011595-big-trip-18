@@ -1,5 +1,5 @@
-import {createElement} from '../render.js';
-import {humanizeDate, humanizeTime} from '../utils.js';
+import { createElement } from '../render.js';
+import { humanizeDate, humanizeTime } from '../utils.js';
 
 const createOfferTemplate = (offer) => `
     <li class="event__offer">
@@ -17,7 +17,7 @@ const createTripItemTemplate = (points, offersData, destinationsData, offersByTy
 
     return offers
       .map((offerId) => {
-        const selectedOffer = offerByPointType.offers.find((el) => (el.id === offerId));
+        const selectedOffer = offerByPointType.offers.find((el) => el.id === offerId);
 
         return createOfferTemplate(selectedOffer);
       })
@@ -28,8 +28,7 @@ const createTripItemTemplate = (points, offersData, destinationsData, offersByTy
   const humanizedTimeFrom = dateFrom !== null ? humanizeTime(dateFrom) : '';
   const humanizedTimeTo = dateTo !== null ? humanizeTime(dateTo) : '';
 
-  const name = destinationsData.find((el) => (el.id === destination)).name;
-
+  const name = destinationsData.find((el) => el.id === destination).name;
 
   const favoriteClassName = isFavorite
     ? 'event__favorite-btn event__favorite-btn--active'
@@ -73,26 +72,33 @@ ${offersTemplate}
 };
 
 export default class TripItemView {
+  #point = null;
+  #offer = null;
+  #destination = null;
+  #offerByType = null;
+
+  #element = null;
+
   constructor(point, offer, destination, offerByType) {
-    this.point = point;
-    this.offer = offer;
-    this.destination = destination;
-    this.offerByType = offerByType;
+    this.#point = point;
+    this.#offer = offer;
+    this.#destination = destination;
+    this.#offerByType = offerByType;
   }
 
-  getTemplate() {
-    return createTripItemTemplate(this.point, this.offer, this.destination, this.offerByType);
+  get template() {
+    return createTripItemTemplate(this.#point, this.#offer, this.#destination, this.#offerByType);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
     }
 
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }

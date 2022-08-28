@@ -168,6 +168,14 @@ export default class EditPointView {
     return this.#element;
   }
 
+  addCloseToRollupBtn(el, cb) {
+    el.querySelector('.event__rollup-btn').addEventListener('click', cb);
+  }
+
+  addDeleteToResetBtn(el, cb) {
+    el.querySelector('.event__reset-btn').addEventListener('click', cb);
+  }
+
   removeElement() {
     this.#element = null;
   }

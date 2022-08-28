@@ -98,6 +98,11 @@ export default class TripItemView {
     return this.#element;
   }
 
+  addOpenToRollupBtn(el, cb) {
+    el.querySelector('.event__rollup-btn').addEventListener('click',
+      cb);
+  }
+
   removeElement() {
     this.#element = null;
   }

@@ -116,9 +116,7 @@ export default class TripEventsPresenter {
     if (this.#tripPoints.length) {
       render(this.#tripList, this.#tripEventsContainer);
 
-      this.#tripPoints.forEach((point) => {
-        this.#renderPoint(point);
-      });
+      this.#tripPoints.forEach(this.#renderPoint);
     } else {
       this.#renderText(TextFromFilter.Everything);
     }

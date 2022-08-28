@@ -1,16 +1,16 @@
 import { createElement } from '../render.js';
 import { humanizeDate, humanizeTime } from '../util/utils.js';
 
-const createOfferTemplate = (offer) => `
+const createTripItemTemplate = (points, offersData, destinationsData, offersByTypeData) => {
+  const { basePrice, type, dateFrom, dateTo, destination, isFavorite, offers } = points;
+
+  const createOfferTemplate = (offer) => `
     <li class="event__offer">
       <span class="event__offer-title">${offer.title}</span>
         &plus;&euro;&nbsp;
       <span class="event__offer-price">${offer.price}</span>
     </li>
   `;
-
-const createTripItemTemplate = (points, offersData, destinationsData, offersByTypeData) => {
-  const { basePrice, type, dateFrom, dateTo, destination, isFavorite, offers } = points;
 
   const createOffersTemplate = () => {
     const offerByPointType = offersByTypeData.find((offer) => offer.type === type);

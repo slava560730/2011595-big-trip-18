@@ -1,4 +1,4 @@
-import { getRandomArrayElement, getRandomInteger } from '../utils.js';
+import { getRandomArrayElement, getRandomInteger } from '../util/utils.js';
 import { OFFER_TITLES, PriceRange } from './const.js';
 import { getRandomId } from './point.js';
 

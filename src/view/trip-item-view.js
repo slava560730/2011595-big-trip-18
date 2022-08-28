@@ -1,5 +1,5 @@
 import { createElement } from '../render.js';
-import { humanizeDate, humanizeTime } from '../utils.js';
+import { humanizeDate, humanizeTime } from '../util/utils.js';
 
 const createOfferTemplate = (offer) => `
     <li class="event__offer">

@@ -3,6 +3,8 @@ import TripListView from '../view/trip-list-view.js';
 import TripSortView from '../view/trip-sort-view.js';
 import EditPointView from '../view/edit-point-view.js';
 import TripItemView from '../view/trip-item-view.js';
+import PointsEmpty from '../view/points-empty.js';
+import { TextFromFilter } from '../util/view-const.js';
 
 export default class TripEventsPresenter {
   #tripList = new TripListView();
@@ -33,13 +35,6 @@ export default class TripEventsPresenter {
       this.#tripOffersByType
     );
 
-    // кнопка стрелка вниз
-    const pointEditButton = pointComponent.element.querySelector('.event__rollup-btn');
-    // кнопка delete
-    const deleteEditPointButton = pointEditComponent.element.querySelector('.event__reset-btn');
-    // кнопка стрелка вверх
-    const closeEditPointButton = pointEditComponent.element.querySelector('.event__rollup-btn');
-
     // меняем точка на редактирование
     const replacePointToEdit = () => {
       pointComponent.element.parentNode.replaceChild(
@@ -49,9 +44,8 @@ export default class TripEventsPresenter {
     };
 
     // меняем редактирование на точку
-    // pointEditComponent.element.parentNode.replaceChild(
     const replaceEditToPoint = () => {
-      this.#tripList.element.replaceChild(
+      pointEditComponent.element.parentNode.replaceChild(
         pointComponent.element,
         pointEditComponent.element
       );
@@ -65,32 +59,35 @@ export default class TripEventsPresenter {
       }
     };
 
-    // Листенер для кнопки-стрелки при закрытой форме редактирования + добавляем Esc
-    pointEditButton.addEventListener('click', () => {
+    const openForm = () => {
       replacePointToEdit();
       document.addEventListener('keydown', onEscKeyDown);
-    });
+    };
 
-    // Листенер для кнопки-стрелки на форме редактирования
-    closeEditPointButton.addEventListener('click', () => {
+    const closeForm = () => {
       replaceEditToPoint();
       document.removeEventListener('keydown', onEscKeyDown);
-    });
+    };
 
-    // Листенер для кнопки delete на форме редактирования
-    deleteEditPointButton.addEventListener('click', () => {
-      replaceEditToPoint();
-      document.removeEventListener('keydown', onEscKeyDown);
-    });
+    pointComponent.addOpenToRollupBtn(pointComponent.element, openForm);
+
+    pointEditComponent.addCloseToRollupBtn(pointEditComponent.element, closeForm);
+
+    pointEditComponent.addDeleteToResetBtn(pointEditComponent.element,closeForm);
 
     // Листенер для формы редактирования
     pointEditComponent.element.addEventListener('submit', (evt) => {
       evt.preventDefault();
-      replaceEditToPoint();
-      document.removeEventListener('keydown', onEscKeyDown);
+      closeForm();
     });
 
     render(pointComponent, this.#tripList.element);
+  };
+
+  #renderText = (text) => {
+    const noPointsComponent = new PointsEmpty(text);
+
+    render(noPointsComponent, this.#tripEventsContainer);
   };
 
   init = (tripEventsContainer, pointsModel, offersModel, destinationsModel, offersByTypeModel) => {
@@ -107,10 +104,13 @@ export default class TripEventsPresenter {
     this.#tripOffersByType = [...this.#offersByTypeModel.offersByType];
 
     render(new TripSortView(), this.#tripEventsContainer);
-    render(this.#tripList, this.#tripEventsContainer);
 
-    this.#tripPoints.forEach((point) => {
-      this.#renderPoint(point);
-    });
+    if (this.#tripPoints.length) {
+      render(this.#tripList, this.#tripEventsContainer);
+
+      this.#tripPoints.forEach(this.#renderPoint);
+    } else {
+      this.#renderText(TextFromFilter.Everything);
+    }
   };
 }

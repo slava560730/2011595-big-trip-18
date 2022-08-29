@@ -1,5 +1,5 @@
 import { createElement } from '../render.js';
-import { getWordCapitalized, humanizeEditDate } from '../utils.js';
+import { getWordCapitalized, humanizeEditDate } from '../util/utils.js';
 import { OFFER_TYPES } from '../mock/const.js';
 
 const createEditPointTemplate = (points, offersData, destinationsData, offersByTypeData) => {
@@ -166,6 +166,14 @@ export default class EditPointView {
     }
 
     return this.#element;
+  }
+
+  addCloseToRollupBtn(el, cb) {
+    el.querySelector('.event__rollup-btn').addEventListener('click', cb);
+  }
+
+  addDeleteToResetBtn(el, cb) {
+    el.querySelector('.event__reset-btn').addEventListener('click', cb);
   }
 
   removeElement() {

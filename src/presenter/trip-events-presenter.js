@@ -1,4 +1,4 @@
-import { render } from '../framework/render.js';
+import {render, replace} from '../framework/render.js';
 import TripListView from '../view/trip-list-view.js';
 import TripSortView from '../view/trip-sort-view.js';
 import EditPointView from '../view/edit-point-view.js';
@@ -37,17 +37,17 @@ export default class TripEventsPresenter {
 
     // меняем точка на редактирование
     const replacePointToEdit = () => {
-      pointComponent.element.parentNode.replaceChild(
-        pointEditComponent.element,
-        pointComponent.element
+      replace(
+        pointEditComponent,
+        pointComponent
       );
     };
 
     // меняем редактирование на точку
     const replaceEditToPoint = () => {
-      pointEditComponent.element.parentNode.replaceChild(
-        pointComponent.element,
-        pointEditComponent.element
+      replace(
+        pointComponent,
+        pointEditComponent
       );
     };
 

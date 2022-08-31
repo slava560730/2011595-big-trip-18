@@ -1,5 +1,5 @@
-import { createElement } from '../render.js';
-import { humanizeDate, humanizeTime } from '../util/utils.js';
+import { humanizeDate, humanizeTime } from '../util/point.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
 const createTripItemTemplate = (points, offersData, destinationsData, offersByTypeData) => {
   const { basePrice, type, dateFrom, dateTo, destination, isFavorite, offers } = points;
@@ -71,15 +71,14 @@ ${offersTemplate}
             </li>`;
 };
 
-export default class TripItemView {
+export default class TripItemView extends AbstractView {
   #point = null;
   #offer = null;
   #destination = null;
   #offerByType = null;
 
-  #element = null;
-
   constructor(point, offer, destination, offerByType) {
+    super();
     this.#point = point;
     this.#offer = offer;
     this.#destination = destination;
@@ -90,20 +89,13 @@ export default class TripItemView {
     return createTripItemTemplate(this.#point, this.#offer, this.#destination, this.#offerByType);
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
+  setRollupBtnClickHandler(callback) {
+    this._callback.click = callback;
 
-    return this.#element;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#rollupBtnClickHandler);
   }
 
-  addOpenToRollupBtn(el, cb) {
-    el.querySelector('.event__rollup-btn').addEventListener('click',
-      cb);
-  }
-
-  removeElement() {
-    this.#element = null;
-  }
+  #rollupBtnClickHandler = () => {
+    this._callback.click();
+  };
 }

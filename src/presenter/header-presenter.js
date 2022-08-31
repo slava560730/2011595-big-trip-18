@@ -1,4 +1,4 @@
-import { render, RenderPosition } from '../render.js';
+import { render, RenderPosition } from '../framework/render.js';
 import HeaderInfoView from '../view/header-info-view.js';
 import HeaderFiltersView from '../view/header-filters-view.js';
 

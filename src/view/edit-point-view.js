@@ -1,9 +1,25 @@
-import { createElement } from '../render.js';
-import { getWordCapitalized, humanizeEditDate } from '../util/utils.js';
+import { getWordCapitalized, humanizeEditDate } from '../util/point.js';
 import { OFFER_TYPES } from '../mock/const.js';
+import AbstractView from '../framework/view/abstract-view.js';
+
+const BLANK_POINT = {
+  basePrice: 0,
+  type: '',
+  dateFrom: null,
+  dateTo: null,
+  destination: '',
+  offers: [],
+};
 
 const createEditPointTemplate = (points, offersData, destinationsData, offersByTypeData) => {
-  const { basePrice, type, dateFrom, dateTo, destination, offers } = points;
+  const {
+    basePrice = 0,
+    type = '',
+    dateFrom = null,
+    dateTo = null,
+    destination = '',
+    offers = [],
+  } = points;
 
   const name = destinationsData.find((el) => el.id === destination).name;
   const description = destinationsData.find((el) => el.id === destination).description;
@@ -141,15 +157,14 @@ const createEditPointTemplate = (points, offersData, destinationsData, offersByT
             </li>`;
 };
 
-export default class EditPointView {
+export default class EditPointView extends AbstractView {
   #point = null;
   #offer = null;
   #destination = null;
   #offerByType = null;
 
-  #element = null;
-
-  constructor(point, offer, destination, offerByType) {
+  constructor(point = BLANK_POINT, offer, destination, offerByType) {
+    super();
     this.#point = point;
     this.#offer = offer;
     this.#destination = destination;
@@ -160,23 +175,41 @@ export default class EditPointView {
     return createEditPointTemplate(this.#point, this.#offer, this.#destination, this.#offerByType);
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
+  setRollupBtnClickHandler(callback) {
+    this._callback.click = callback;
 
-    return this.#element;
+    this.element
+      .querySelector('.event__rollup-btn')
+      .addEventListener('click', this.#rollupBtnClickHandler);
   }
 
-  addCloseToRollupBtn(el, cb) {
-    el.querySelector('.event__rollup-btn').addEventListener('click', cb);
+  #rollupBtnClickHandler = () => {
+    this._callback.click();
+  };
+
+  setResetBtnClickHandler(callback) {
+    this._callback.resetClick = callback;
+
+    this.element
+      .querySelector('.event__reset-btn')
+      .addEventListener('click', this.#resetBtnClickHandler);
   }
 
-  addDeleteToResetBtn(el, cb) {
-    el.querySelector('.event__reset-btn').addEventListener('click', cb);
+  #resetBtnClickHandler = () => {
+    this._callback.resetClick();
+  };
+
+  setFormSubmitHandler(callback) {
+    this._callback.formSubmit = callback;
+
+    this.element
+      .querySelector('.event--edit')
+      .addEventListener('submit', this.#formSubmitHandler);
   }
 
-  removeElement() {
-    this.#element = null;
-  }
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+
+    this._callback.formSubmit();
+  };
 }

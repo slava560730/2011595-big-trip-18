@@ -1,4 +1,4 @@
-import { render } from '../render.js';
+import {render, replace} from '../framework/render.js';
 import TripListView from '../view/trip-list-view.js';
 import TripSortView from '../view/trip-sort-view.js';
 import EditPointView from '../view/edit-point-view.js';
@@ -37,17 +37,17 @@ export default class TripEventsPresenter {
 
     // меняем точка на редактирование
     const replacePointToEdit = () => {
-      pointComponent.element.parentNode.replaceChild(
-        pointEditComponent.element,
-        pointComponent.element
+      replace(
+        pointEditComponent,
+        pointComponent
       );
     };
 
     // меняем редактирование на точку
     const replaceEditToPoint = () => {
-      pointEditComponent.element.parentNode.replaceChild(
-        pointComponent.element,
-        pointEditComponent.element
+      replace(
+        pointComponent,
+        pointEditComponent
       );
     };
 
@@ -69,17 +69,13 @@ export default class TripEventsPresenter {
       document.removeEventListener('keydown', onEscKeyDown);
     };
 
-    pointComponent.addOpenToRollupBtn(pointComponent.element, openForm);
+    pointComponent.setRollupBtnClickHandler(openForm);
 
-    pointEditComponent.addCloseToRollupBtn(pointEditComponent.element, closeForm);
+    pointEditComponent.setRollupBtnClickHandler(closeForm);
 
-    pointEditComponent.addDeleteToResetBtn(pointEditComponent.element,closeForm);
+    pointEditComponent.setResetBtnClickHandler(closeForm);
 
-    // Листенер для формы редактирования
-    pointEditComponent.element.addEventListener('submit', (evt) => {
-      evt.preventDefault();
-      closeForm();
-    });
+    pointEditComponent.setFormSubmitHandler(closeForm);
 
     render(pointComponent, this.#tripList.element);
   };

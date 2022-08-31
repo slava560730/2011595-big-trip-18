@@ -60,3 +60,13 @@ export const BasePriceRange = {
   MIN: 100,
   MAX: 3000,
 };
+
+export const HoursInterval = {
+  MIN: 0,
+  MAX: 24,
+};
+
+export const MinSecInterval = {
+  MIN: 0,
+  MAX: 60,
+};

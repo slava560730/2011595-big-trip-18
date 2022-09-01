@@ -4,6 +4,9 @@ import PointsModel from './model/points-model.js';
 import OffersModel from './model/offers-model.js';
 import DestinationsModel from './model/destinations-model.js';
 import OffersByTypeModel from './model/offers-by-type-model.js';
+import {generateFilter} from './mock/filter.js';
+import {render} from './framework/render.js';
+import HeaderFiltersView from './view/header-filters-view.js';
 
 const siteHeaderElement = document.querySelector('.page-header');
 const siteMainElement = document.querySelector('.page-main');
@@ -13,7 +16,7 @@ const tripEventsElement = siteMainElement.querySelector('.trip-events');
 
 const headerPresenter = new HeaderPresenter();
 const tripEventsPresenter = new TripEventsPresenter();
-const pointsModel = new PointsModel();
+export const pointsModel = new PointsModel();
 const offersModel = new OffersModel();
 const destinationsModel = new DestinationsModel();
 const offersByTypeModel = new OffersByTypeModel();
@@ -26,3 +29,7 @@ tripEventsPresenter.init(
   destinationsModel,
   offersByTypeModel
 );
+
+const filters = generateFilter(pointsModel.points);
+
+render(new HeaderFiltersView(filters), tripFiltersElement);

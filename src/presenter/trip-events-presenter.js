@@ -106,7 +106,7 @@ export default class TripEventsPresenter {
 
       this.#tripPoints.forEach(this.#renderPoint);
     } else {
-      this.#renderText(TextFromFilter.Everything);
+      this.#renderText(TextFromFilter.EVERYTHING);
     }
   };
 }

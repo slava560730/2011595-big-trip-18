@@ -6,6 +6,11 @@ export const DESTINATION_DESCRIPTIONS = [
   'Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus.',
 ];
 
+export const IdRange = {
+  MIN: 1,
+  MAX: 5,
+};
+
 export const DESTINATION_NAMES = [
   'Tokyo',
   'Rio',
@@ -16,11 +21,6 @@ export const DESTINATION_NAMES = [
   'Lisbon',
   'Nairobi',
 ];
-
-export const IdRange = {
-  MIN: 1,
-  MAX: 5,
-};
 
 export const PicRange = {
   MIN: 1,
@@ -59,4 +59,14 @@ export const PriceRange = {
 export const BasePriceRange = {
   MIN: 100,
   MAX: 3000,
+};
+
+export const HoursInterval = {
+  MIN: 0,
+  MAX: 24,
+};
+
+export const MinSecInterval = {
+  MIN: 0,
+  MAX: 60,
 };

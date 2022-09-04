@@ -1,17 +1,17 @@
-import {render, replace} from '../framework/render.js';
+import { render } from '../framework/render.js';
 import TripListView from '../view/trip-list-view.js';
 import TripSortView from '../view/trip-sort-view.js';
-import EditPointView from '../view/edit-point-view.js';
-import TripItemView from '../view/trip-item-view.js';
 import PointsEmpty from '../view/points-empty.js';
 import { TextFromFilter } from '../util/view-const.js';
+import PointPresenter from './point-presenter.js';
+import {updateItem} from '../util/common.js';
 
 export default class TripEventsPresenter {
   #tripList = new TripListView();
 
   #tripEventsContainer = null;
 
-  #pointsModel = null;
+  #pointsModel = [];
   #offersModel = null;
   #destinationsModel = null;
   #offersByTypeModel = null;
@@ -22,6 +22,7 @@ export default class TripEventsPresenter {
   #tripOffersByType = null;
 
   #sortComponent = new TripSortView();
+  #pointPresenter = new Map();
 
   #renderSort = (tripEventsContainer) => {
     render(this.#sortComponent, tripEventsContainer);
@@ -31,63 +32,20 @@ export default class TripEventsPresenter {
     render(this.#tripList, tripEventsContainer);
   };
 
-  #renderPoint = (point) => {
-    const pointComponent = new TripItemView(
-      point,
-      this.#tripOffers,
-      this.#tripDestinations,
-      this.#tripOffersByType
-    );
-    const pointEditComponent = new EditPointView(
-      point,
-      this.#tripOffers,
-      this.#tripDestinations,
-      this.#tripOffersByType
-    );
+  #clearPointList = () => {
+    this.#pointPresenter.forEach((presenter) => presenter.destroy());
+    this.#pointPresenter.clear();
+  };
 
-    // меняем точка на редактирование
-    const replacePointToEdit = () => {
-      replace(
-        pointEditComponent,
-        pointComponent
-      );
-    };
+  #handleTaskChange = (updatedPoint) => {
+    this.#tripPoints = updateItem(this.#tripPoints, updatedPoint);
+    this.#pointPresenter.get(updatedPoint.id).init(updatedPoint);
+  };
 
-    // меняем редактирование на точку
-    const replaceEditToPoint = () => {
-      replace(
-        pointComponent,
-        pointEditComponent
-      );
-    };
-
-    const onEscKeyDown = (evt) => {
-      if (evt.key === 'Escape' || evt.key === 'Esc') {
-        evt.preventDefault();
-        replaceEditToPoint();
-        document.removeEventListener('keydown', onEscKeyDown);
-      }
-    };
-
-    const openForm = () => {
-      replacePointToEdit();
-      document.addEventListener('keydown', onEscKeyDown);
-    };
-
-    const closeForm = () => {
-      replaceEditToPoint();
-      document.removeEventListener('keydown', onEscKeyDown);
-    };
-
-    pointComponent.setRollupBtnClickHandler(openForm);
-
-    pointEditComponent.setRollupBtnClickHandler(closeForm);
-
-    pointEditComponent.setResetBtnClickHandler(closeForm);
-
-    pointEditComponent.setFormSubmitHandler(closeForm);
-
-    render(pointComponent, this.#tripList.element);
+  #renderPoint = (point, tripOffers, tripDestinations, tripOffersByType) => {
+    const pointPresenter = new PointPresenter(this.#tripList.element, this.#handleTaskChange);
+    pointPresenter.init(point, tripOffers, tripDestinations, tripOffersByType);
+    this.#pointPresenter.set(point.id, pointPresenter);
   };
 
   #renderText = (text) => {
@@ -114,7 +72,9 @@ export default class TripEventsPresenter {
     if (this.#tripPoints.length) {
       this.#renderList(this.#tripEventsContainer);
 
-      this.#tripPoints.forEach(this.#renderPoint);
+      this.#tripPoints.forEach((point) =>
+        this.#renderPoint(point, this.#tripOffers, this.#tripDestinations, this.#tripOffersByType)
+      );
     } else {
       this.#renderText(TextFromFilter.EVERYTHING);
     }

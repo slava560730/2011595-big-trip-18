@@ -16,7 +16,7 @@ const tripEventsElement = siteMainElement.querySelector('.trip-events');
 
 const headerPresenter = new HeaderPresenter();
 const tripEventsPresenter = new TripEventsPresenter();
-export const pointsModel = new PointsModel();
+const pointsModel = new PointsModel();
 const offersModel = new OffersModel();
 const destinationsModel = new DestinationsModel();
 const offersByTypeModel = new OffersByTypeModel();

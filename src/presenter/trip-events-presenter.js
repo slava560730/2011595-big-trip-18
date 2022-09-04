@@ -21,6 +21,16 @@ export default class TripEventsPresenter {
   #tripDestinations = null;
   #tripOffersByType = null;
 
+  #sortComponent = new TripSortView();
+
+  #renderSort = (tripEventsContainer) => {
+    render(this.#sortComponent, tripEventsContainer);
+  };
+
+  #renderList = (tripEventsContainer) => {
+    render(this.#tripList, tripEventsContainer);
+  };
+
   #renderPoint = (point) => {
     const pointComponent = new TripItemView(
       point,
@@ -99,10 +109,10 @@ export default class TripEventsPresenter {
     this.#tripDestinations = [...this.#destinationsModel.destinations];
     this.#tripOffersByType = [...this.#offersByTypeModel.offersByType];
 
-    render(new TripSortView(), this.#tripEventsContainer);
+    this.#renderSort(this.#tripEventsContainer);
 
     if (this.#tripPoints.length) {
-      render(this.#tripList, this.#tripEventsContainer);
+      this.#renderList(this.#tripEventsContainer);
 
       this.#tripPoints.forEach(this.#renderPoint);
     } else {

@@ -15,20 +15,18 @@ const tripMainElement = siteHeaderElement.querySelector('.trip-main');
 const tripEventsElement = siteMainElement.querySelector('.trip-events');
 
 const headerPresenter = new HeaderPresenter();
-const tripEventsPresenter = new TripEventsPresenter();
 const pointsModel = new PointsModel();
 const offersModel = new OffersModel();
 const destinationsModel = new DestinationsModel();
 const offersByTypeModel = new OffersByTypeModel();
-
-headerPresenter.init(tripMainElement, tripFiltersElement);
-tripEventsPresenter.init(
-  tripEventsElement,
+const tripEventsPresenter = new TripEventsPresenter(tripEventsElement,
   pointsModel,
   offersModel,
   destinationsModel,
-  offersByTypeModel
-);
+  offersByTypeModel);
+
+headerPresenter.init(tripMainElement, tripFiltersElement);
+tripEventsPresenter.init();
 
 const filters = generateFilter(pointsModel.points);
 

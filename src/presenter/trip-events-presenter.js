@@ -4,7 +4,7 @@ import TripSortView from '../view/trip-sort-view.js';
 import PointsEmpty from '../view/points-empty.js';
 import { TextFromFilter } from '../util/view-const.js';
 import PointPresenter from './point-presenter.js';
-import {updateItem} from '../util/common.js';
+import { updateItem } from '../util/common.js';
 
 export default class TripEventsPresenter {
   #tripList = new TripListView();
@@ -37,14 +37,30 @@ export default class TripEventsPresenter {
     this.#pointPresenter.clear();
   };
 
-  #handleTaskChange = (updatedPoint) => {
+  #handleTaskChange = (
+    updatedPoint,
+    offers = this.#tripOffers,
+    destinations = this.#tripDestinations,
+    offersByType = this.#tripOffersByType
+  ) => {
     this.#tripPoints = updateItem(this.#tripPoints, updatedPoint);
-    this.#pointPresenter.get(updatedPoint.id).init(updatedPoint);
+    this.#pointPresenter
+      .get(updatedPoint.id)
+      .init(updatedPoint, offers, destinations, offersByType);
   };
 
-  #renderPoint = (point, tripOffers, tripDestinations, tripOffersByType) => {
-    const pointPresenter = new PointPresenter(this.#tripList.element, this.#handleTaskChange);
-    pointPresenter.init(point, tripOffers, tripDestinations, tripOffersByType);
+  #handleModeChange = () => {
+    this.#pointPresenter.forEach((presenter) => presenter.resetView());
+  };
+
+  #renderPoint = (
+    point,
+    offers = this.#tripOffers,
+    destinations = this.#tripDestinations,
+    offersByType = this.#tripOffersByType
+  ) => {
+    const pointPresenter = new PointPresenter(this.#tripList.element, this.#handleTaskChange, this.#handleModeChange);
+    pointPresenter.init(point, offers, destinations, offersByType);
     this.#pointPresenter.set(point.id, pointPresenter);
   };
 
@@ -54,7 +70,7 @@ export default class TripEventsPresenter {
     render(noPointsComponent, this.#tripEventsContainer);
   };
 
-  init = (tripEventsContainer, pointsModel, offersModel, destinationsModel, offersByTypeModel) => {
+  constructor(tripEventsContainer, pointsModel, offersModel, destinationsModel, offersByTypeModel) {
     this.#tripEventsContainer = tripEventsContainer;
 
     this.#pointsModel = pointsModel;
@@ -62,10 +78,13 @@ export default class TripEventsPresenter {
     this.#destinationsModel = destinationsModel;
     this.#offersByTypeModel = offersByTypeModel;
 
-    this.#tripPoints = [...this.#pointsModel.points];
     this.#tripOffers = [...this.#offersModel.offers];
     this.#tripDestinations = [...this.#destinationsModel.destinations];
     this.#tripOffersByType = [...this.#offersByTypeModel.offersByType];
+  }
+
+  init = () => {
+    this.#tripPoints = [...this.#pointsModel.points];
 
     this.#renderSort(this.#tripEventsContainer);
 

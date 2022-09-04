@@ -2,18 +2,26 @@ import TripItemView from '../view/trip-item-view.js';
 import EditPointView from '../view/edit-point-view.js';
 import { remove, render, replace } from '../framework/render.js';
 
+const Mode = {
+  DEFAULT: 'DEFAULT',
+  EDITING: 'EDITING',
+};
+
 export default class PointPresenter {
   #point = null;
+  #mode = Mode.DEFAULT;
   #changeData = null;
+  #changeMode = null;
 
   #pointListContainer = null;
 
   #pointComponent = null;
   #pointEditComponent = null;
 
-  constructor(pointListContainer, changeData) {
+  constructor(pointListContainer, changeData, changeMode) {
     this.#pointListContainer = pointListContainer;
     this.#changeData = changeData;
+    this.#changeMode = changeMode;
   }
 
   init = (point, tripOffers, tripDestinations, tripOffersByType) => {
@@ -32,6 +40,7 @@ export default class PointPresenter {
     );
 
     this.#pointComponent.setRollupBtnClickHandler(this.#openForm);
+    this.#pointComponent.setFavoriteBtnClickHandler(this.#favoriteClick);
     this.#pointEditComponent.setRollupBtnClickHandler(this.#closeForm);
     this.#pointEditComponent.setResetBtnClickHandler(this.#closeForm);
     this.#pointEditComponent.setFormSubmitHandler(this.#submitForm);
@@ -43,11 +52,11 @@ export default class PointPresenter {
 
     // Проверка на наличие в DOM необходима,
     // чтобы не пытаться заменить то, что не было отрисовано
-    if (this.#pointListContainer.contains(prevPointComponent.element)) {
+    if (this.#mode === Mode.DEFAULT) {
       replace(this.#pointComponent, prevPointComponent);
     }
 
-    if (this.#pointListContainer.contains(prevPointEditComponent.element)) {
+    if (this.#mode === Mode.EDITING) {
       replace(this.#pointEditComponent, prevPointEditComponent);
     }
 
@@ -60,14 +69,23 @@ export default class PointPresenter {
     remove(this.#pointEditComponent);
   };
 
+  resetView = () => {
+    if (this.#mode !== Mode.DEFAULT) {
+      this.#replaceEditToPoint();
+    }
+  };
+
   // меняем точка на редактирование
   #replacePointToEdit = () => {
     replace(this.#pointEditComponent, this.#pointComponent);
+    this.#changeMode();
+    this.#mode = Mode.EDITING;
   };
 
   // меняем редактирование на точку
   #replaceEditToPoint = () => {
     replace(this.#pointComponent, this.#pointEditComponent);
+    this.#mode = Mode.DEFAULT;
   };
 
   #escKeyDownHandler = (evt) => {
@@ -92,5 +110,9 @@ export default class PointPresenter {
     this.#changeData(point);
     this.#replaceEditToPoint();
     document.removeEventListener('keydown', this.#escKeyDownHandler);
+  };
+
+  #favoriteClick = () => {
+    this.#changeData({ ...this.#point, isFavorite: !this.#point.isFavorite });
   };
 }

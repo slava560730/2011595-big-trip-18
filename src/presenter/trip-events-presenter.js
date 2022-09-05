@@ -1,10 +1,11 @@
-import { render } from '../framework/render.js';
+import { remove, render } from '../framework/render.js';
 import TripListView from '../view/trip-list-view.js';
 import TripSortView from '../view/trip-sort-view.js';
 import PointsEmpty from '../view/points-empty.js';
-import { TextFromFilter } from '../util/view-const.js';
+import { SortType, TextFromFilter } from '../util/view-const.js';
 import PointPresenter from './point-presenter.js';
 import { updateItem } from '../util/common.js';
+import { sortByDay, sortByPrice, sortByTime } from '../util/point.js';
 
 export default class TripEventsPresenter {
   #tripList = new TripListView();
@@ -17,15 +18,47 @@ export default class TripEventsPresenter {
   #offersByTypeModel = null;
 
   #tripPoints = null;
+  #sourcedTripPoints = [];
   #tripOffers = null;
   #tripDestinations = null;
   #tripOffersByType = null;
 
-  #sortComponent = new TripSortView();
+  #sortComponent = null;
   #pointPresenter = new Map();
+  #currentSortType = SortType.DAY;
 
-  #renderSort = (tripEventsContainer) => {
-    render(this.#sortComponent, tripEventsContainer);
+  #sortPoints = (sortType) => {
+    switch (sortType) {
+      case SortType.TIME:
+        this.#tripPoints.sort(sortByTime);
+        break;
+      case SortType.PRICE:
+        this.#tripPoints.sort(sortByPrice);
+        break;
+      default:
+        this.#tripPoints.sort(sortByDay);
+    }
+
+    this.#currentSortType = sortType;
+  };
+
+  #handleSortTypeChange = (sortType) => {
+    if (this.#currentSortType === sortType) {
+      return;
+    }
+
+    this.#sortPoints(sortType);
+    this.#renderSort(sortType);
+    this.#clearPointList();
+    this.#renderPointList();
+  };
+
+  #renderSort = (sortType = SortType.DAY) => {
+    remove(this.#sortComponent);
+    this.#sortComponent = new TripSortView(sortType);
+
+    render(this.#sortComponent, this.#tripEventsContainer);
+    this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
   };
 
   #renderList = (tripEventsContainer) => {
@@ -44,6 +77,7 @@ export default class TripEventsPresenter {
     offersByType = this.#tripOffersByType
   ) => {
     this.#tripPoints = updateItem(this.#tripPoints, updatedPoint);
+    this.#sourcedTripPoints = updateItem(this.#sourcedTripPoints, updatedPoint);
     this.#pointPresenter
       .get(updatedPoint.id)
       .init(updatedPoint, offers, destinations, offersByType);
@@ -59,7 +93,11 @@ export default class TripEventsPresenter {
     destinations = this.#tripDestinations,
     offersByType = this.#tripOffersByType
   ) => {
-    const pointPresenter = new PointPresenter(this.#tripList.element, this.#handleTaskChange, this.#handleModeChange);
+    const pointPresenter = new PointPresenter(
+      this.#tripList.element,
+      this.#handleTaskChange,
+      this.#handleModeChange
+    );
     pointPresenter.init(point, offers, destinations, offersByType);
     this.#pointPresenter.set(point.id, pointPresenter);
   };
@@ -83,17 +121,22 @@ export default class TripEventsPresenter {
     this.#tripOffersByType = [...this.#offersByTypeModel.offersByType];
   }
 
+  #renderPointList = () => {
+    this.#renderList(this.#tripEventsContainer);
+
+    this.#tripPoints.forEach((point) =>
+      this.#renderPoint(point, this.#tripOffers, this.#tripDestinations, this.#tripOffersByType)
+    );
+  };
+
   init = () => {
     this.#tripPoints = [...this.#pointsModel.points];
+    this.#sourcedTripPoints = [...this.#pointsModel.points];
 
-    this.#renderSort(this.#tripEventsContainer);
+    this.#renderSort();
 
     if (this.#tripPoints.length) {
-      this.#renderList(this.#tripEventsContainer);
-
-      this.#tripPoints.forEach((point) =>
-        this.#renderPoint(point, this.#tripOffers, this.#tripDestinations, this.#tripOffersByType)
-      );
+      this.#renderPointList();
     } else {
       this.#renderText(TextFromFilter.EVERYTHING);
     }

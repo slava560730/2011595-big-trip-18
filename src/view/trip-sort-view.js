@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import {SortType} from '../util/view-const.js';
+import {SortType} from '../util/point-const.js';
 
 const createTripSortTemplate = (sortType) => `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
             <div class="trip-sort__item  trip-sort__item--day">

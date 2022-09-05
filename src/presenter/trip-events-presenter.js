@@ -27,6 +27,19 @@ export default class TripEventsPresenter {
   #pointPresenter = new Map();
   #currentSortType = SortType.DAY;
 
+  constructor(tripEventsContainer, pointsModel, offersModel, destinationsModel, offersByTypeModel) {
+    this.#tripEventsContainer = tripEventsContainer;
+
+    this.#pointsModel = pointsModel;
+    this.#offersModel = offersModel;
+    this.#destinationsModel = destinationsModel;
+    this.#offersByTypeModel = offersByTypeModel;
+
+    this.#tripOffers = [...this.#offersModel.offers];
+    this.#tripDestinations = [...this.#destinationsModel.destinations];
+    this.#tripOffersByType = [...this.#offersByTypeModel.offersByType];
+  }
+
   #sortPoints = (sortType) => {
     switch (sortType) {
       case SortType.TIME:
@@ -70,17 +83,12 @@ export default class TripEventsPresenter {
     this.#pointPresenter.clear();
   };
 
-  #handleTaskChange = (
-    updatedPoint,
-    offers = this.#tripOffers,
-    destinations = this.#tripDestinations,
-    offersByType = this.#tripOffersByType
-  ) => {
+  #handleTaskChange = (updatedPoint) => {
     this.#tripPoints = updateItem(this.#tripPoints, updatedPoint);
     this.#sourcedTripPoints = updateItem(this.#sourcedTripPoints, updatedPoint);
     this.#pointPresenter
       .get(updatedPoint.id)
-      .init(updatedPoint, offers, destinations, offersByType);
+      .init(updatedPoint, this.#tripOffers, this.#tripDestinations, this.#tripOffersByType);
   };
 
   #handleModeChange = () => {
@@ -107,19 +115,6 @@ export default class TripEventsPresenter {
 
     render(noPointsComponent, this.#tripEventsContainer);
   };
-
-  constructor(tripEventsContainer, pointsModel, offersModel, destinationsModel, offersByTypeModel) {
-    this.#tripEventsContainer = tripEventsContainer;
-
-    this.#pointsModel = pointsModel;
-    this.#offersModel = offersModel;
-    this.#destinationsModel = destinationsModel;
-    this.#offersByTypeModel = offersByTypeModel;
-
-    this.#tripOffers = [...this.#offersModel.offers];
-    this.#tripDestinations = [...this.#destinationsModel.destinations];
-    this.#tripOffersByType = [...this.#offersByTypeModel.offersByType];
-  }
 
   #renderPointList = () => {
     this.#renderList(this.#tripEventsContainer);

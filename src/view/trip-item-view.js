@@ -1,4 +1,4 @@
-import { humanizeDate, humanizeTime } from '../util/point.js';
+import { humanizeDate, humanizeTime, pointDuration } from '../util/point.js';
 import AbstractView from '../framework/view/abstract-view.js';
 
 const createTripItemTemplate = (points, offersData, destinationsData, offersByTypeData) => {
@@ -30,9 +30,7 @@ const createTripItemTemplate = (points, offersData, destinationsData, offersByTy
 
   const name = destinationsData.find((el) => el.id === destination).name;
 
-  const favoriteClassName = isFavorite
-    ? 'event__favorite-btn--active'
-    : '';
+  const favoriteClassName = isFavorite ? 'event__favorite-btn--active' : '';
 
   const offersTemplate = createOffersTemplate();
 
@@ -49,7 +47,7 @@ const createTripItemTemplate = (points, offersData, destinationsData, offersByTy
                     &mdash;
                     <time class="event__end-time" datetime="${dateTo}">${humanizedTimeTo}</time>
                   </p>
-                  <p class="event__duration">${'продолжительность'}</p>
+                  <p class="event__duration">${pointDuration(dateTo, dateFrom)}</p>
                 </div>
                 <p class="event__price">
                   &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
@@ -92,7 +90,9 @@ export default class TripItemView extends AbstractView {
   setRollupBtnClickHandler(callback) {
     this._callback.click = callback;
 
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#rollupBtnClickHandler);
+    this.element
+      .querySelector('.event__rollup-btn')
+      .addEventListener('click', this.#rollupBtnClickHandler);
   }
 
   #rollupBtnClickHandler = () => {
@@ -101,7 +101,9 @@ export default class TripItemView extends AbstractView {
 
   setFavoriteBtnClickHandler = (callback) => {
     this._callback.favoriteClick = callback;
-    this.element.querySelector('.event__favorite-btn').addEventListener('click', this.#favoriteBtnClickHandler);
+    this.element
+      .querySelector('.event__favorite-btn')
+      .addEventListener('click', this.#favoriteBtnClickHandler);
   };
 
   #favoriteBtnClickHandler = (evt) => {

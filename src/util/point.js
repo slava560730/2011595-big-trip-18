@@ -7,10 +7,9 @@ export const humanizeDate = (date) => dayjs(date).format('MMM D');
 export const humanizeTime = (date) => dayjs(date).format('hh:mm');
 export const humanizeEditDate = (date) => dayjs(date).format('DD/MM/YY hh:mm');
 
-export const isPointInFuture = ({ dateFrom, dateTo }) =>
+export const isPointInFuture = ({ dateFrom }) =>
   dayjs().isSame(dayjs(dateFrom)) ||
-  dayjs().isBefore(dayjs(dateFrom)) ||
-  (dayjs().isAfter(dayjs(dateFrom)) && dayjs().isBefore(dayjs(dateTo)));
+  dayjs().isBefore(dayjs(dateFrom));
 
 export const isPointInPast = ({ dateTo }) => dayjs().isAfter(dayjs(dateTo));
 
@@ -66,9 +65,11 @@ const getWeightForNullDate = (dateA, dateB) => {
 };
 
 export const sortByTime = (pointA, pointB) => {
-  const millisecondA = dayjs(pointA.dateTo).diff(dayjs(pointA.dateFrom), 'minute', true);
-  const millisecondB = dayjs(pointB.dateTo).diff(dayjs(pointB.dateFrom), 'minute', true);
   const weight = getWeightForNullDate(pointA.dateFrom, pointB.dateTo);
 
-  return weight ?? millisecondB - millisecondA;
+  return (
+    weight ??
+    dayjs(pointB.dateTo).diff(dayjs(pointB.dateFrom), 'minute', true) -
+      dayjs(pointA.dateTo).diff(dayjs(pointA.dateFrom), 'minute', true)
+  );
 };

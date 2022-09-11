@@ -186,13 +186,39 @@ export default class EditPointView extends AbstractStatefulView {
     this.updateElement(EditPointView.parsePointToState(point));
   };
 
-  #setInnerHandlers = () => {};
+  #setInnerHandlers = () => {
+    this.element
+      .querySelector('.event__input--destination')
+      .addEventListener('change', this.#eventDestinationInputHandler);
+
+    this.element
+      .querySelector('.event__input--price')
+      .addEventListener('change', this.#eventPriceInputHandler);
+  };
+
+  #eventDestinationInputHandler = (evt) => {
+    evt.preventDefault();
+
+    if (evt.target.value) {
+      this.updateElement({
+        destination: DESTINATION_NAMES.indexOf(evt.target.value),
+      });
+    }
+  };
+
+  #eventPriceInputHandler = (evt) => {
+    evt.preventDefault();
+
+    this.updateElement({
+      basePrice: evt.target.value,
+    });
+  };
 
   _restoreHandlers = () => {
     this.#setInnerHandlers();
     this.setFormSubmitHandler(this._callback.formSubmit);
     this.setResetBtnClickHandler(this._callback.resetClick);
-    this.setResetBtnClickHandler(this._callback.click);
+    this.setRollupBtnClickHandler(this._callback.click);
   };
 
   setRollupBtnClickHandler(callback) {

@@ -4,7 +4,7 @@ import { generateOffersByType } from './offers-by-type.js';
 import { generateDate } from './util.js';
 import { nanoid } from 'nanoid';
 
-export const getRandomId = () => getRandomInteger(1, 3);
+export const getRandomId = () => getRandomInteger(0, 2);
 
 export const generatePoint = () => ({
   basePrice: getRandomInteger(BasePriceRange.MIN, BasePriceRange.MAX),

@@ -1,9 +1,8 @@
 import { getRandomArrayElement, getRandomInteger } from '../util/common.js';
 import { OFFER_TITLES, PriceRange } from './const.js';
-import { getRandomId } from './point.js';
 
 export const generateOffer = () => ({
-  id: getRandomId(),
+  id: getRandomInteger(0, 2),
   title: getRandomArrayElement(OFFER_TITLES),
   price: getRandomInteger(PriceRange.MIN, PriceRange.MAX),
 });

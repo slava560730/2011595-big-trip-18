@@ -57,7 +57,7 @@ const createEditPointTemplate = (points, offersData, destinationsData, offersByT
                       <input class="event__offer-checkbox  visually-hidden"
                        id="event-offer-luggage-${offer.id}" type="checkbox"
                         name="event-offer-luggage"
-                        ${isOfferChecked(offer)}>
+                        ${isOfferChecked(offer)} data-id="${offer.id}">
                         <label class="event__offer-label" for="event-offer-luggage-${offer.id}">
                           <span class="event__offer-title">${offer.title}</span>
                           &plus;&euro;&nbsp;
@@ -166,6 +166,7 @@ export default class EditPointView extends AbstractStatefulView {
   #offer = null;
   #destination = null;
   #offerByType = null;
+  #checkboxesOfOffers = null;
 
   constructor(point = BLANK_POINT, offer, destination, offerByType) {
     super();
@@ -187,16 +188,47 @@ export default class EditPointView extends AbstractStatefulView {
   };
 
   #setInnerHandlers = () => {
+    this.#checkboxesOfOffers = this.element.querySelectorAll('.event__offer-checkbox');
+
     this.element
       .querySelector('.event__input--destination')
-      .addEventListener('change', this.#eventDestinationInputHandler);
+      .addEventListener('change', this.#destinationChangeHandler);
 
     this.element
       .querySelector('.event__input--price')
-      .addEventListener('change', this.#eventPriceInputHandler);
+      .addEventListener('change', this.#priceChangeHandler);
+
+    this.element
+      .querySelectorAll('.event__type-input')
+      .forEach((eventType) => eventType.addEventListener('click', this.#typeToggleHandler));
+
+    this.#checkboxesOfOffers.forEach((eventOffer) =>
+      eventOffer.addEventListener('change', this.#selectOffersToggleHandler)
+    );
   };
 
-  #eventDestinationInputHandler = (evt) => {
+  #selectOffersToggleHandler = () => {
+    const selectedOffers = [];
+    this.#checkboxesOfOffers.forEach((checkbox) =>
+      checkbox.checked ? selectedOffers.push(Number(checkbox.dataset.id)) : ''
+    );
+    this.updateElement({
+      offers: selectedOffers,
+    });
+  };
+
+  #typeToggleHandler = (evt) => {
+    evt.preventDefault();
+
+    if (evt.target.value) {
+      this.updateElement({
+        type: evt.target.value,
+        offers: [],
+      });
+    }
+  };
+
+  #destinationChangeHandler = (evt) => {
     evt.preventDefault();
 
     if (evt.target.value) {
@@ -206,12 +238,14 @@ export default class EditPointView extends AbstractStatefulView {
     }
   };
 
-  #eventPriceInputHandler = (evt) => {
+  #priceChangeHandler = (evt) => {
     evt.preventDefault();
 
-    this.updateElement({
-      basePrice: evt.target.value,
-    });
+    if (evt.target.value) {
+      this.updateElement({
+        basePrice: evt.target.value,
+      });
+    }
   };
 
   _restoreHandlers = () => {

@@ -11,11 +11,11 @@ export const generateDestTest = () => {
       name: DESTINATION_NAMES[i],
       pictures: [
         {
-          src: `https://via.placeholder.com/${getRandomInteger(1, 3)}50`,
+          src: `https://via.placeholder.com/${getRandomInteger(1, 5)}50`,
           description: getRandomArrayElement(DESTINATION_DESCRIPTIONS),
         },
         {
-          src: `https://via.placeholder.com/${getRandomInteger(1, 3)}50`,
+          src: `https://via.placeholder.com/${getRandomInteger(1, 5)}50`,
           description: getRandomArrayElement(DESTINATION_DESCRIPTIONS),
         },
       ],

@@ -209,9 +209,11 @@ export default class EditPointView extends AbstractStatefulView {
 
   #selectOffersToggleHandler = () => {
     const selectedOffers = [];
+
     this.#checkboxesOfOffers.forEach((checkbox) =>
       checkbox.checked ? selectedOffers.push(Number(checkbox.dataset.id)) : ''
     );
+
     this.updateElement({
       offers: selectedOffers,
     });

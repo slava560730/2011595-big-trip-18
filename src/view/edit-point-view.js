@@ -1,6 +1,11 @@
 import { getWordCapitalized, humanizeEditDate } from '../util/point.js';
 import { DESTINATION_NAMES, OFFER_TYPES } from '../mock/const.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
+import flatpickr from 'flatpickr';
+
+import 'flatpickr/dist/flatpickr.min.css';
+import 'flatpickr/dist/themes/material_blue.css';
+
 
 const BLANK_POINT = {
   basePrice: 0,
@@ -103,9 +108,7 @@ const createEditPointTemplate = (points, offersData, destinationsData, offersByT
                     <div class="event__type-list">
                       <fieldset class="event__type-group">
                         <legend class="visually-hidden">Event type</legend>
-
                         ${createTypesEditTemplate(type)}
-
                       </fieldset>
                     </div>
                   </div>
@@ -136,25 +139,23 @@ const createEditPointTemplate = (points, offersData, destinationsData, offersByT
                     <span class="visually-hidden">Open event</span>
                   </button>
                 </header>
+
                 <section class="event__details">
                   <section class="event__section  event__section--offers">
                     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-
                     <div class="event__available-offers">
-
                     ${offersEditTemplate}
-
                     </div>
                   </section>
 
                   <section class="event__section  event__section--destination">
                     <h3 class="event__section-title  event__section-title--destination">Destination</h3>
                     <p class="event__destination-description">${description}</p>
-                          <div class="event__photos-container">
-        <div class="event__photos-tape">
-          ${createPhotosTemplate(pictures)}
-        </div>
-      </div>
+                    <div class="event__photos-container">
+                        <div class="event__photos-tape">
+                            ${createPhotosTemplate(pictures)}
+                        </div>
+                    </div>
                   </section>
                 </section>
               </form>
@@ -166,6 +167,7 @@ export default class EditPointView extends AbstractStatefulView {
   #offer = null;
   #destination = null;
   #offerByType = null;
+  #datepicker = null;
   #checkboxesOfOffers = null;
 
   constructor(point = BLANK_POINT, offer, destination, offerByType) {
@@ -177,6 +179,8 @@ export default class EditPointView extends AbstractStatefulView {
     this.#offerByType = offerByType;
 
     this.#setInnerHandlers();
+    this.#setToDatepicker();
+    this.#setFromDatepicker();
   }
 
   get template() {
@@ -204,6 +208,56 @@ export default class EditPointView extends AbstractStatefulView {
 
     this.#checkboxesOfOffers.forEach((eventOffer) =>
       eventOffer.addEventListener('change', this.#selectOffersToggleHandler)
+    );
+  };
+
+  #dateStartHandler = ([userDateStart]) => {
+    // if (userDateStart > this._state.dateTo) {
+    //   this.updateElement({
+    //     dateFrom: userDateStart,
+    //     dateTo: userDateStart,
+    //   });
+    // }
+    this.updateElement({
+      dateFrom: userDateStart,
+    });
+  };
+
+  #dateEndHandler = ([userDateEnd]) => {
+    this.updateElement({
+      dateTo: userDateEnd,
+    });
+  };
+
+  #setToDatepicker = () => {
+    const dateStartInput = this.element.querySelector('input[name="event-start-time"]');
+    const dateEndInput = this.element.querySelector('input[name="event-end-time"]');
+    this.#datepicker = flatpickr(
+      dateEndInput,
+      {
+        enableTime: true,
+        'time_24hr': true,
+        defaultDate: dateEndInput.value,
+        dateFormat: 'd/m/y H:i',
+        minDate: dateStartInput.value,
+        onClose: this.#dateEndHandler,
+      },
+    );
+  };
+
+  #setFromDatepicker = () => {
+    const dateStartInput = this.element.querySelector('input[name="event-start-time"]');
+    const dateEndInput = this.element.querySelector('input[name="event-end-time"]');
+    this.#datepicker = flatpickr(
+      dateStartInput,
+      {
+        enableTime: true,
+        'time_24hr': true,
+        defaultDate: dateStartInput.value,
+        dateFormat: 'd/m/y H:i',
+        maxDate: dateEndInput.value,
+        onClose: this.#dateStartHandler,
+      },
     );
   };
 
@@ -255,6 +309,8 @@ export default class EditPointView extends AbstractStatefulView {
     this.setFormSubmitHandler(this._callback.formSubmit);
     this.setResetBtnClickHandler(this._callback.resetClick);
     this.setRollupBtnClickHandler(this._callback.click);
+    this.#setToDatepicker();
+    this.#setFromDatepicker();
   };
 
   setRollupBtnClickHandler(callback) {

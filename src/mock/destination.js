@@ -1,18 +1,25 @@
-import { getRandomArrayElement, getRandomInteger } from '../util/common.js';
-import { DESTINATION_DESCRIPTIONS, DESTINATION_NAMES, PicRange } from './const.js';
+import {getRandomArrayElement, getRandomInteger} from '../util/common.js';
+import { DESTINATION_DESCRIPTIONS, DESTINATION_NAMES } from './const.js';
 
-export const generateDestination = () => ({
-  id: getRandomInteger(1, 3),
-  description: getRandomArrayElement(DESTINATION_DESCRIPTIONS),
-  name: getRandomArrayElement(DESTINATION_NAMES),
-  pictures: [
-    {
-      src: `http://picsum.photos/248/152?r=${getRandomInteger(PicRange.MIN, PicRange.MAX)}`,
+export const generateDestTest = () => {
+  const destinations = [];
+
+  for (let i = 0; i < DESTINATION_NAMES.length; i++) {
+    destinations.push({
+      id: i,
       description: getRandomArrayElement(DESTINATION_DESCRIPTIONS),
-    },
-    {
-      src: `http://picsum.photos/248/152?r=${getRandomInteger(PicRange.MIN, PicRange.MAX)}`,
-      description: getRandomArrayElement(DESTINATION_DESCRIPTIONS),
-    },
-  ],
-});
+      name: DESTINATION_NAMES[i],
+      pictures: [
+        {
+          src: `https://via.placeholder.com/${getRandomInteger(1, 5)}50`,
+          description: getRandomArrayElement(DESTINATION_DESCRIPTIONS),
+        },
+        {
+          src: `https://via.placeholder.com/${getRandomInteger(1, 5)}50`,
+          description: getRandomArrayElement(DESTINATION_DESCRIPTIONS),
+        },
+      ],
+    });
+  }
+  return destinations;
+};

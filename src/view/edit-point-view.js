@@ -5,7 +5,7 @@ import flatpickr from 'flatpickr';
 
 import 'flatpickr/dist/flatpickr.min.css';
 import 'flatpickr/dist/themes/material_blue.css';
-
+import { prefixToLowerDash } from '../mock/util.js';
 
 const BLANK_POINT = {
   basePrice: 0,
@@ -57,19 +57,22 @@ const createEditPointTemplate = (points, offersData, destinationsData, offersByT
 
   const isOfferChecked = (offer) => (offers.includes(offer.id) ? 'checked' : '');
 
-  const createOfferEditTemplate = (offer) => `
-                      <div class="event__offer-selector">
+  const createOfferEditTemplate = (offer) => {
+    const dashPrefix = prefixToLowerDash(offer.title);
+
+    return ` <div class="event__offer-selector">
                       <input class="event__offer-checkbox  visually-hidden"
-                       id="event-offer-luggage-${offer.id}" type="checkbox"
-                        name="event-offer-luggage"
+                       id="event-offer-${dashPrefix}-${offer.id}" type="checkbox"
+                        name="event-offer-${dashPrefix}"
                         ${isOfferChecked(offer)} data-id="${offer.id}">
-                        <label class="event__offer-label" for="event-offer-luggage-${offer.id}">
+                        <label class="event__offer-label"
+                         for="event-offer-${dashPrefix}-${offer.id}">
                           <span class="event__offer-title">${offer.title}</span>
                           &plus;&euro;&nbsp;
                           <span class="event__offer-price">${offer.price}</span>
                         </label>
-                      </div>
-  `;
+                      </div>`;
+  };
 
   const createOffersEditTemplate = () => {
     const offerEditByType = offersByTypeData.find((offer) => offer.type === type);
@@ -212,12 +215,6 @@ export default class EditPointView extends AbstractStatefulView {
   };
 
   #dateStartHandler = ([userDateStart]) => {
-    // if (userDateStart > this._state.dateTo) {
-    //   this.updateElement({
-    //     dateFrom: userDateStart,
-    //     dateTo: userDateStart,
-    //   });
-    // }
     this.updateElement({
       dateFrom: userDateStart,
     });
@@ -232,33 +229,29 @@ export default class EditPointView extends AbstractStatefulView {
   #setToDatepicker = () => {
     const dateStartInput = this.element.querySelector('input[name="event-start-time"]');
     const dateEndInput = this.element.querySelector('input[name="event-end-time"]');
-    this.#datepicker = flatpickr(
-      dateEndInput,
-      {
-        enableTime: true,
-        'time_24hr': true,
-        defaultDate: dateEndInput.value,
-        dateFormat: 'd/m/y H:i',
-        minDate: dateStartInput.value,
-        onClose: this.#dateEndHandler,
-      },
-    );
+    this.#datepicker = flatpickr(dateEndInput, {
+      enableTime: true,
+      // eslint-disable-next-line camelcase
+      time_24hr: true,
+      defaultDate: dateEndInput.value,
+      dateFormat: 'd/m/y H:i',
+      minDate: dateStartInput.value,
+      onClose: this.#dateEndHandler,
+    });
   };
 
   #setFromDatepicker = () => {
     const dateStartInput = this.element.querySelector('input[name="event-start-time"]');
     const dateEndInput = this.element.querySelector('input[name="event-end-time"]');
-    this.#datepicker = flatpickr(
-      dateStartInput,
-      {
-        enableTime: true,
-        'time_24hr': true,
-        defaultDate: dateStartInput.value,
-        dateFormat: 'd/m/y H:i',
-        maxDate: dateEndInput.value,
-        onClose: this.#dateStartHandler,
-      },
-    );
+    this.#datepicker = flatpickr(dateStartInput, {
+      enableTime: true,
+      // eslint-disable-next-line camelcase
+      time_24hr: true,
+      defaultDate: dateStartInput.value,
+      dateFormat: 'd/m/y H:i',
+      maxDate: dateEndInput.value,
+      onClose: this.#dateStartHandler,
+    });
   };
 
   #selectOffersToggleHandler = () => {

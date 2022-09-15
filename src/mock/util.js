@@ -15,3 +15,9 @@ export const generateDate = (dayStart, dayEnd) => {
     .add(secondsAdd, 'second')
     .toDate();
 };
+
+export const prefixToLowerDash = (prefix) => {
+  const re = / /g;
+
+  return prefix.replace(re, '-').toLowerCase();
+};

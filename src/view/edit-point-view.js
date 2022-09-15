@@ -1,6 +1,11 @@
 import { getWordCapitalized, humanizeEditDate } from '../util/point.js';
 import { DESTINATION_NAMES, OFFER_TYPES } from '../mock/const.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
+import flatpickr from 'flatpickr';
+
+import 'flatpickr/dist/flatpickr.min.css';
+import 'flatpickr/dist/themes/material_blue.css';
+import { prefixToLowerDash } from '../mock/util.js';
 
 const BLANK_POINT = {
   basePrice: 0,
@@ -52,19 +57,22 @@ const createEditPointTemplate = (points, offersData, destinationsData, offersByT
 
   const isOfferChecked = (offer) => (offers.includes(offer.id) ? 'checked' : '');
 
-  const createOfferEditTemplate = (offer) => `
-                      <div class="event__offer-selector">
+  const createOfferEditTemplate = (offer) => {
+    const dashPrefix = prefixToLowerDash(offer.title);
+
+    return ` <div class="event__offer-selector">
                       <input class="event__offer-checkbox  visually-hidden"
-                       id="event-offer-luggage-${offer.id}" type="checkbox"
-                        name="event-offer-luggage"
+                       id="event-offer-${dashPrefix}-${offer.id}" type="checkbox"
+                        name="event-offer-${dashPrefix}"
                         ${isOfferChecked(offer)} data-id="${offer.id}">
-                        <label class="event__offer-label" for="event-offer-luggage-${offer.id}">
+                        <label class="event__offer-label"
+                         for="event-offer-${dashPrefix}-${offer.id}">
                           <span class="event__offer-title">${offer.title}</span>
                           &plus;&euro;&nbsp;
                           <span class="event__offer-price">${offer.price}</span>
                         </label>
-                      </div>
-  `;
+                      </div>`;
+  };
 
   const createOffersEditTemplate = () => {
     const offerEditByType = offersByTypeData.find((offer) => offer.type === type);
@@ -103,9 +111,7 @@ const createEditPointTemplate = (points, offersData, destinationsData, offersByT
                     <div class="event__type-list">
                       <fieldset class="event__type-group">
                         <legend class="visually-hidden">Event type</legend>
-
                         ${createTypesEditTemplate(type)}
-
                       </fieldset>
                     </div>
                   </div>
@@ -136,25 +142,23 @@ const createEditPointTemplate = (points, offersData, destinationsData, offersByT
                     <span class="visually-hidden">Open event</span>
                   </button>
                 </header>
+
                 <section class="event__details">
                   <section class="event__section  event__section--offers">
                     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-
                     <div class="event__available-offers">
-
                     ${offersEditTemplate}
-
                     </div>
                   </section>
 
                   <section class="event__section  event__section--destination">
                     <h3 class="event__section-title  event__section-title--destination">Destination</h3>
                     <p class="event__destination-description">${description}</p>
-                          <div class="event__photos-container">
-        <div class="event__photos-tape">
-          ${createPhotosTemplate(pictures)}
-        </div>
-      </div>
+                    <div class="event__photos-container">
+                        <div class="event__photos-tape">
+                            ${createPhotosTemplate(pictures)}
+                        </div>
+                    </div>
                   </section>
                 </section>
               </form>
@@ -166,6 +170,7 @@ export default class EditPointView extends AbstractStatefulView {
   #offer = null;
   #destination = null;
   #offerByType = null;
+  #datepicker = null;
   #checkboxesOfOffers = null;
 
   constructor(point = BLANK_POINT, offer, destination, offerByType) {
@@ -177,6 +182,8 @@ export default class EditPointView extends AbstractStatefulView {
     this.#offerByType = offerByType;
 
     this.#setInnerHandlers();
+    this.#setToDatepicker();
+    this.#setFromDatepicker();
   }
 
   get template() {
@@ -205,6 +212,46 @@ export default class EditPointView extends AbstractStatefulView {
     this.#checkboxesOfOffers.forEach((eventOffer) =>
       eventOffer.addEventListener('change', this.#selectOffersToggleHandler)
     );
+  };
+
+  #dateStartHandler = ([userDateStart]) => {
+    this.updateElement({
+      dateFrom: userDateStart,
+    });
+  };
+
+  #dateEndHandler = ([userDateEnd]) => {
+    this.updateElement({
+      dateTo: userDateEnd,
+    });
+  };
+
+  #setToDatepicker = () => {
+    const dateStartInput = this.element.querySelector('input[name="event-start-time"]');
+    const dateEndInput = this.element.querySelector('input[name="event-end-time"]');
+    this.#datepicker = flatpickr(dateEndInput, {
+      enableTime: true,
+      // eslint-disable-next-line camelcase
+      time_24hr: true,
+      defaultDate: dateEndInput.value,
+      dateFormat: 'd/m/y H:i',
+      minDate: dateStartInput.value,
+      onClose: this.#dateEndHandler,
+    });
+  };
+
+  #setFromDatepicker = () => {
+    const dateStartInput = this.element.querySelector('input[name="event-start-time"]');
+    const dateEndInput = this.element.querySelector('input[name="event-end-time"]');
+    this.#datepicker = flatpickr(dateStartInput, {
+      enableTime: true,
+      // eslint-disable-next-line camelcase
+      time_24hr: true,
+      defaultDate: dateStartInput.value,
+      dateFormat: 'd/m/y H:i',
+      maxDate: dateEndInput.value,
+      onClose: this.#dateStartHandler,
+    });
   };
 
   #selectOffersToggleHandler = () => {
@@ -255,6 +302,8 @@ export default class EditPointView extends AbstractStatefulView {
     this.setFormSubmitHandler(this._callback.formSubmit);
     this.setResetBtnClickHandler(this._callback.resetClick);
     this.setRollupBtnClickHandler(this._callback.click);
+    this.#setToDatepicker();
+    this.#setFromDatepicker();
   };
 
   setRollupBtnClickHandler(callback) {

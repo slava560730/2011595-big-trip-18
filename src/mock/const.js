@@ -41,10 +41,10 @@ export const OFFER_TYPES = [
 
 export const OFFER_TITLES = [
   'Upgrade to a 1',
-  'Upgrade to a 2 ',
-  'Upgrade to a 3 ',
+  'Upgrade to a 2',
+  'Upgrade to a 3',
   'Upgrade to a 4',
-  'Upgrade to a 5 ',
+  'Upgrade to a 5',
   'Upgrade to a 6',
   'Upgrade to a 7',
   'Upgrade to a 8',

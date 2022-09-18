@@ -170,7 +170,8 @@ export default class EditPointView extends AbstractStatefulView {
   #offer = null;
   #destination = null;
   #offerByType = null;
-  #datepicker = null;
+  #datepickerFrom = null;
+  #datepickerTo = null;
   #checkboxesOfOffers = null;
 
   constructor(point = BLANK_POINT, offer, destination, offerByType) {
@@ -193,8 +194,12 @@ export default class EditPointView extends AbstractStatefulView {
   removeElement = () => {
     super.removeElement();
 
-    if (this.#datepicker) {
-      this.destroyDatepicker();
+    if (this.#datepickerFrom) {
+      this.destroyDatepickerFrom();
+    }
+
+    if (this.#datepickerTo) {
+      this.destroyDatepickerTo();
     }
   };
 
@@ -222,28 +227,36 @@ export default class EditPointView extends AbstractStatefulView {
     );
   };
 
-  destroyDatepicker = () => {
-    this.#datepicker.destroy();
-    this.#datepicker = null;
+  destroyDatepickerFrom = () => {
+    this.#datepickerFrom.destroy();
+    this.#datepickerFrom = null;
   };
 
+  destroyDatepickerTo = () => {
+    this.#datepickerTo.destroy();
+    this.#datepickerTo = null;
+  };
 
   #dateStartHandler = ([userDateStart]) => {
     this.updateElement({
       dateFrom: userDateStart,
     });
+
+    this.destroyDatepickerFrom();
   };
 
   #dateEndHandler = ([userDateEnd]) => {
     this.updateElement({
       dateTo: userDateEnd,
     });
+
+    this.destroyDatepickerTo();
   };
 
   #setToDatepicker = () => {
     const dateStartInput = this.element.querySelector('input[name="event-start-time"]');
     const dateEndInput = this.element.querySelector('input[name="event-end-time"]');
-    this.#datepicker = flatpickr(dateEndInput, {
+    this.#datepickerTo = flatpickr(dateEndInput, {
       enableTime: true,
       // eslint-disable-next-line camelcase
       time_24hr: true,
@@ -257,7 +270,7 @@ export default class EditPointView extends AbstractStatefulView {
   #setFromDatepicker = () => {
     const dateStartInput = this.element.querySelector('input[name="event-start-time"]');
     const dateEndInput = this.element.querySelector('input[name="event-end-time"]');
-    this.#datepicker = flatpickr(dateStartInput, {
+    this.#datepickerFrom = flatpickr(dateStartInput, {
       enableTime: true,
       // eslint-disable-next-line camelcase
       time_24hr: true,

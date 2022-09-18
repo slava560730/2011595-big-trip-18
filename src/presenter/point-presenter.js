@@ -86,7 +86,6 @@ export default class PointPresenter {
   #replaceEditToPoint = () => {
     replace(this.#pointComponent, this.#pointEditComponent);
     this.#mode = Mode.DEFAULT;
-    this.#pointEditComponent.destroyDatepicker();
   };
 
   #resetEditToPoint = () => {

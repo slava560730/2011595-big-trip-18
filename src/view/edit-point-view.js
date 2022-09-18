@@ -190,6 +190,14 @@ export default class EditPointView extends AbstractStatefulView {
     return createEditPointTemplate(this._state, this.#offer, this.#destination, this.#offerByType);
   }
 
+  removeElement = () => {
+    super.removeElement();
+
+    if (this.#datepicker) {
+      this.destroyDatepicker();
+    }
+  };
+
   reset = (point) => {
     this.updateElement(EditPointView.parsePointToState(point));
   };
@@ -213,6 +221,12 @@ export default class EditPointView extends AbstractStatefulView {
       eventOffer.addEventListener('change', this.#selectOffersToggleHandler)
     );
   };
+
+  destroyDatepicker = () => {
+    this.#datepicker.destroy();
+    this.#datepicker = null;
+  };
+
 
   #dateStartHandler = ([userDateStart]) => {
     this.updateElement({

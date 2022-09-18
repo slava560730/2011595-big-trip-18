@@ -42,7 +42,7 @@ export default class PointPresenter {
     this.#pointComponent.setRollupBtnClickHandler(this.#openForm);
     this.#pointComponent.setFavoriteBtnClickHandler(this.#favoriteClick);
     this.#pointEditComponent.setRollupBtnClickHandler(this.#closeForm);
-    this.#pointEditComponent.setResetBtnClickHandler(this.#closeForm);
+    this.#pointEditComponent.setResetBtnClickHandler(this.#resetForm);
     this.#pointEditComponent.setFormSubmitHandler(this.#submitForm);
 
     if (prevPointComponent === null || prevPointEditComponent === null) {
@@ -86,6 +86,7 @@ export default class PointPresenter {
   #replaceEditToPoint = () => {
     replace(this.#pointComponent, this.#pointEditComponent);
     this.#mode = Mode.DEFAULT;
+    this.#pointEditComponent.destroyDatepicker();
   };
 
   #resetEditToPoint = () => {
@@ -108,6 +109,11 @@ export default class PointPresenter {
 
   #closeForm = () => {
     this.#resetEditToPoint();
+    document.removeEventListener('keydown', this.#escKeyDownHandler);
+  };
+
+  #resetForm = () => {
+    this.destroy();
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   };
 

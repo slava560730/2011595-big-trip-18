@@ -1,16 +1,23 @@
 import AbstractView from '../framework/view/abstract-view.js';
+import {FilterType} from '../util/view-const.js';
 
-const createNoPointsTemplate = (text) => `<p class="trip-events__msg">${text}</p>`;
+const EmptyListTextType = {
+  [FilterType.EVERYTHING]: 'Click "NEW EVENT" in menu to create your first waypoint',
+  [FilterType.FUTURE]: 'There are no future waypoints now',
+  [FilterType.PAST]: 'There are no past waypoints now',
+};
+
+const createNoPointsTemplate = (filterType) => `<p class="trip-events__msg">${EmptyListTextType[filterType]}</p>`;
 
 export default class PointsEmpty extends AbstractView {
-  #text = null;
+  #filterType = null;
 
-  constructor(text) {
+  constructor(filterType) {
     super();
-    this.#text = text;
+    this.#filterType = filterType;
   }
 
   get template() {
-    return createNoPointsTemplate(this.#text);
+    return createNoPointsTemplate(this.#filterType);
   }
 }

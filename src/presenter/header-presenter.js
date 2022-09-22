@@ -3,18 +3,16 @@ import HeaderInfoView from '../view/header-info-view.js';
 
 export default class HeaderPresenter {
   #infoContainer = null;
-  #filterContainer = null;
 
   #headerInfoComponent = new HeaderInfoView();
 
-  #renderHeader = (infoContainer, filterContainer, place = RenderPosition.AFTERBEGIN) => {
+  #renderHeader = (infoContainer, place = RenderPosition.AFTERBEGIN) => {
     render(this.#headerInfoComponent, infoContainer, place);
   };
 
-  init = (infoContainer, filterContainer) => {
+  init = (infoContainer) => {
     this.#infoContainer = infoContainer;
-    this.#filterContainer = filterContainer;
 
-    this.#renderHeader(infoContainer, filterContainer);
+    this.#renderHeader(infoContainer);
   };
 }

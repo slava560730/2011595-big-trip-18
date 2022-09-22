@@ -1,88 +1,32 @@
 import { getWordCapitalized, humanizeEditDate } from '../util/point.js';
-import {
-  DESTINATION_DESCRIPTIONS,
-  DESTINATION_NAMES,
-  OFFER_TITLES,
-  OFFER_TYPES,
-  PriceRange,
-} from '../mock/const.js';
+import { BLANK_PICTURES, DESTINATION_NAMES, OFFER_TYPES } from '../mock/const.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import flatpickr from 'flatpickr';
+import he from 'he';
 
 import 'flatpickr/dist/flatpickr.min.css';
 import 'flatpickr/dist/themes/material_blue.css';
 import { prefixToLowerDash } from '../mock/util.js';
-import dayjs from 'dayjs';
-import { getRandomArrayElement, getRandomInteger } from '../util/common.js';
-
-const BLANK_POINT = {
-  basePrice: 0,
-  type: OFFER_TYPES[0],
-  dateFrom: dayjs(),
-  dateTo: dayjs(),
-  offers: [],
-};
-
-const BLANK_OFFER_BY_TYPE = [
-  {
-    type: OFFER_TYPES[0],
-    offers: [
-      {
-        id: 0,
-        title: getRandomArrayElement(OFFER_TITLES),
-        price: getRandomInteger(PriceRange.MIN, PriceRange.MAX),
-      },
-      {
-        id: 1,
-        title: getRandomArrayElement(OFFER_TITLES),
-        price: getRandomInteger(PriceRange.MIN, PriceRange.MAX),
-      },
-      {
-        id: 2,
-        title: getRandomArrayElement(OFFER_TITLES),
-        price: getRandomInteger(PriceRange.MIN, PriceRange.MAX),
-      },
-    ],
-  },
-  {
-    type: OFFER_TYPES[1],
-    offers: [
-      {
-        id: 0,
-        title: getRandomArrayElement(OFFER_TITLES),
-        price: getRandomInteger(PriceRange.MIN, PriceRange.MAX),
-      },
-      {
-        id: 1,
-        title: getRandomArrayElement(OFFER_TITLES),
-        price: getRandomInteger(PriceRange.MIN, PriceRange.MAX),
-      },
-      {
-        id: 2,
-        title: getRandomArrayElement(OFFER_TITLES),
-        price: getRandomInteger(PriceRange.MIN, PriceRange.MAX),
-      },
-    ],
-  },
-];
 
 const createAddPointTemplate = (points, offersData, destinationsData, offersByTypeData) => {
-  const { basePrice = 1, type = '', dateFrom = dayjs(), dateTo = dayjs(), offers = [] } = points;
+  const { basePrice, type, dateFrom, dateTo, offers, destination } = points;
 
-  const name = DESTINATION_NAMES[0];
-  const description = DESTINATION_DESCRIPTIONS[0];
-  const pictures = [
-    {
-      src: `https://via.placeholder.com/${getRandomInteger(1, 5)}50`,
-      description: DESTINATION_DESCRIPTIONS[0],
-    },
-  ];
+  const name =
+    destination !== null ? destinationsData.find((el) => el.id === destination).name : '';
+  const description =
+    destination !== null ? destinationsData.find((el) => el.id === destination).description : '';
+  const pictures =
+    destination !== null
+      ? destinationsData.find((el) => el.id === destination).pictures
+      : BLANK_PICTURES;
 
   const humanizedAddDateFrom = humanizeEditDate(dateFrom);
   const humanizedAddDateTo = humanizeEditDate(dateTo);
 
   const createPhotoTemplate = (src, pictureDescription) =>
-    `<img class="event__photo" src="${src}" alt="${pictureDescription}">`;
+    pictures !== BLANK_PICTURES
+      ? `<img class="event__photo" src="${src}" alt="${pictureDescription}">`
+      : '';
 
   const createPhotosTemplate = (dataPictures) =>
     dataPictures.map((picture) => createPhotoTemplate(picture.src, picture.description)).join('');
@@ -141,7 +85,8 @@ const createAddPointTemplate = (points, offersData, destinationsData, offersByTy
     <label class="event__label  event__type-output" for="event-destination-1">
     ${type}
     </label>
-    <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${selectedCity}" list="destination-list-1">
+    <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination"
+    value="${he.encode(selectedCity)}" list="destination-list-1">
     <datalist id="destination-list-1">
     ${createDataListDestination(selectedCity)}
     </datalist>`;
@@ -181,7 +126,7 @@ const createAddPointTemplate = (points, offersData, destinationsData, offersByTy
                       <span class="visually-hidden">Price</span>
                       &euro;
                     </label>
-                    <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+                    <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${basePrice}">
                   </div>
 
                   <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -202,10 +147,10 @@ const createAddPointTemplate = (points, offersData, destinationsData, offersByTy
                   <section class="event__section  event__section--destination">
                     <h3 class="event__section-title  event__section-title--destination">Destination</h3>
                     <p class="event__destination-description">${description}</p>
-                    <div class="event__photos-container">
+                        ${pictures === BLANK_PICTURES ? createPhotosTemplate(pictures) : `<div class="event__photos-container">
                         <div class="event__photos-tape">
                             ${createPhotosTemplate(pictures)}
-                        </div>
+                        </div>`}
                     </div>
                   </section>
                 </section>
@@ -221,16 +166,8 @@ export default class AddPointView extends AbstractStatefulView {
   #datepickerTo = null;
   #checkboxesOfOffers = null;
 
-  constructor(point = BLANK_POINT, offer, destination, offerByType) {
+  constructor(point, offer, destination, offerByType) {
     super();
-
-    if (!point) {
-      point = BLANK_POINT;
-    }
-
-    if (!offerByType) {
-      offerByType = BLANK_OFFER_BY_TYPE;
-    }
 
     this._state = AddPointView.parsePointToState(point);
 
@@ -384,21 +321,8 @@ export default class AddPointView extends AbstractStatefulView {
     this.#setInnerHandlers();
     this.setFormSubmitHandler(this._callback.formSubmit);
     this.setResetBtnClickHandler(this._callback.resetClick);
-    this.setRollupBtnClickHandler(this._callback.click);
     this.#setToDatepicker();
     this.#setFromDatepicker();
-  };
-
-  setRollupBtnClickHandler(callback) {
-    this._callback.click = callback;
-
-    this.element
-      .querySelector('.event__rollup-btn')
-      .addEventListener('click', this.#rollupBtnClickHandler);
-  }
-
-  #rollupBtnClickHandler = () => {
-    this._callback.click();
   };
 
   setResetBtnClickHandler(callback) {
@@ -421,6 +345,11 @@ export default class AddPointView extends AbstractStatefulView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
+
+    if (this._state.destination === null) {
+      this.shake();
+      return;
+    }
 
     this._callback.formSubmit(AddPointView.parseStateToPoint(this._state));
   };

@@ -2,6 +2,7 @@ import { getWordCapitalized, humanizeEditDate } from '../util/point.js';
 import { DESTINATION_NAMES, OFFER_TYPES } from '../mock/const.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import flatpickr from 'flatpickr';
+import he from 'he';
 
 import 'flatpickr/dist/flatpickr.min.css';
 import 'flatpickr/dist/themes/material_blue.css';
@@ -93,7 +94,7 @@ const createEditPointTemplate = (points, offersData, destinationsData, offersByT
     <label class="event__label  event__type-output" for="event-destination-1">
     ${type}
     </label>
-    <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${selectedCity}" list="destination-list-1">
+    <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${he.encode(selectedCity)}" list="destination-list-1">
     <datalist id="destination-list-1">
     ${createDataListDestination(selectedCity)}
     </datalist>`;
@@ -133,7 +134,7 @@ const createEditPointTemplate = (points, offersData, destinationsData, offersByT
                       <span class="visually-hidden">Price</span>
                       &euro;
                     </label>
-                    <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+                    <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${basePrice}">
                   </div>
 
                   <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>

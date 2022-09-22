@@ -1,14 +1,21 @@
 import { remove, render, RenderPosition } from '../framework/render.js';
 import TripListView from '../view/trip-list-view.js';
 import PointsEmpty from '../view/points-empty.js';
-import {FilterType, SortType, TextFromFilter, UpdateType, UserAction} from '../util/view-const.js';
+import {
+  FilterType,
+  SortType,
+  TextFromFilter,
+  UpdateType,
+  UserAction,
+} from '../util/view-const.js';
 import PointPresenter from './point-presenter.js';
 import { sortByDay, sortByPrice, sortByTime } from '../util/point.js';
 import TripSortView from '../view/trip-sort-view.js';
 import HeaderInfoView from '../view/header-info-view.js';
 
-import {filter} from '../util/filter.js';
+import { filter } from '../util/filter.js';
 import NewPointPresenter from './new-point-presenter.js';
+import { BLANK_POINT } from '../mock/const.js';
 
 export default class TripEventsPresenter {
   #tripList = new TripListView();
@@ -204,6 +211,12 @@ export default class TripEventsPresenter {
   createPoint = (callback) => {
     this.#currentSortType = SortType.DAY;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
-    this.#pointNewPresenter.init(callback);
+    this.#pointNewPresenter.init(
+      callback,
+      BLANK_POINT,
+      this.#tripOffers,
+      this.#tripDestinations,
+      this.#tripOffersByType
+    );
   };
 }

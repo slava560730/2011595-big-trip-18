@@ -1,6 +1,6 @@
 import { remove, render, RenderPosition } from '../framework/render.js';
 import { UpdateType, UserAction } from '../util/view-const.js';
-import {nanoid} from 'nanoid';
+import { nanoid } from 'nanoid';
 import AddPointView from '../view/add-point-view.js';
 
 export default class NewPointPresenter {
@@ -14,13 +14,18 @@ export default class NewPointPresenter {
     this.#changeData = changeData;
   }
 
-  init = (callback) => {
+  init = (callback, point, tripOffers, tripDestinations, tripOffersByType) => {
     this.#destroyCallback = callback;
 
     if (this.#pointEditComponent !== null) {
       return;
     }
-    this.#pointEditComponent = new AddPointView();
+    this.#pointEditComponent = new AddPointView(
+      point,
+      tripOffers,
+      tripDestinations,
+      tripOffersByType
+    );
 
     this.#pointEditComponent.setResetBtnClickHandler(this.#resetForm);
     this.#pointEditComponent.setFormSubmitHandler(this.#submitForm);
@@ -55,10 +60,6 @@ export default class NewPointPresenter {
   };
 
   #submitForm = (point) => {
-    this.#changeData(
-      UserAction.ADD_POINT,
-      UpdateType.MINOR,
-      {id: nanoid(), ...point},
-    );
+    this.#changeData(UserAction.ADD_POINT, UpdateType.MINOR, { id: nanoid(), ...point });
   };
 }

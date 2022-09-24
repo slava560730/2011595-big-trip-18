@@ -2,6 +2,7 @@ import { getWordCapitalized, humanizeEditDate } from '../util/point.js';
 import { DESTINATION_NAMES, OFFER_TYPES } from '../mock/const.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import flatpickr from 'flatpickr';
+import he from 'he';
 
 import 'flatpickr/dist/flatpickr.min.css';
 import 'flatpickr/dist/themes/material_blue.css';
@@ -93,7 +94,7 @@ const createEditPointTemplate = (points, offersData, destinationsData, offersByT
     <label class="event__label  event__type-output" for="event-destination-1">
     ${type}
     </label>
-    <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${selectedCity}" list="destination-list-1">
+    <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${he.encode(selectedCity)}" list="destination-list-1">
     <datalist id="destination-list-1">
     ${createDataListDestination(selectedCity)}
     </datalist>`;
@@ -133,7 +134,7 @@ const createEditPointTemplate = (points, offersData, destinationsData, offersByT
                       <span class="visually-hidden">Price</span>
                       &euro;
                     </label>
-                    <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+                    <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${basePrice}">
                   </div>
 
                   <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -166,17 +167,22 @@ const createEditPointTemplate = (points, offersData, destinationsData, offersByT
 };
 
 export default class EditPointView extends AbstractStatefulView {
-  #point = null;
   #offer = null;
   #destination = null;
   #offerByType = null;
-  #datepicker = null;
+  #datepickerFrom = null;
+  #datepickerTo = null;
   #checkboxesOfOffers = null;
 
   constructor(point = BLANK_POINT, offer, destination, offerByType) {
     super();
+
+    if (!point) {
+      point = BLANK_POINT;
+    }
+
     this._state = EditPointView.parsePointToState(point);
-    this.#point = point;
+
     this.#offer = offer;
     this.#destination = destination;
     this.#offerByType = offerByType;
@@ -189,6 +195,18 @@ export default class EditPointView extends AbstractStatefulView {
   get template() {
     return createEditPointTemplate(this._state, this.#offer, this.#destination, this.#offerByType);
   }
+
+  removeElement = () => {
+    super.removeElement();
+
+    if (this.#datepickerFrom) {
+      this.destroyDatepickerFrom();
+    }
+
+    if (this.#datepickerTo) {
+      this.destroyDatepickerTo();
+    }
+  };
 
   reset = (point) => {
     this.updateElement(EditPointView.parsePointToState(point));
@@ -214,22 +232,36 @@ export default class EditPointView extends AbstractStatefulView {
     );
   };
 
+  destroyDatepickerFrom = () => {
+    this.#datepickerFrom.destroy();
+    this.#datepickerFrom = null;
+  };
+
+  destroyDatepickerTo = () => {
+    this.#datepickerTo.destroy();
+    this.#datepickerTo = null;
+  };
+
   #dateStartHandler = ([userDateStart]) => {
     this.updateElement({
       dateFrom: userDateStart,
     });
+
+    this.destroyDatepickerFrom();
   };
 
   #dateEndHandler = ([userDateEnd]) => {
     this.updateElement({
       dateTo: userDateEnd,
     });
+
+    this.destroyDatepickerTo();
   };
 
   #setToDatepicker = () => {
     const dateStartInput = this.element.querySelector('input[name="event-start-time"]');
     const dateEndInput = this.element.querySelector('input[name="event-end-time"]');
-    this.#datepicker = flatpickr(dateEndInput, {
+    this.#datepickerTo = flatpickr(dateEndInput, {
       enableTime: true,
       // eslint-disable-next-line camelcase
       time_24hr: true,
@@ -243,7 +275,7 @@ export default class EditPointView extends AbstractStatefulView {
   #setFromDatepicker = () => {
     const dateStartInput = this.element.querySelector('input[name="event-start-time"]');
     const dateEndInput = this.element.querySelector('input[name="event-end-time"]');
-    this.#datepicker = flatpickr(dateStartInput, {
+    this.#datepickerFrom = flatpickr(dateStartInput, {
       enableTime: true,
       // eslint-disable-next-line camelcase
       time_24hr: true,
@@ -327,7 +359,7 @@ export default class EditPointView extends AbstractStatefulView {
   }
 
   #resetBtnClickHandler = () => {
-    this._callback.resetClick();
+    this._callback.resetClick(EditPointView.parseStateToPoint(this._state));
   };
 
   setFormSubmitHandler(callback) {
@@ -342,11 +374,11 @@ export default class EditPointView extends AbstractStatefulView {
     this._callback.formSubmit(EditPointView.parseStateToPoint(this._state));
   };
 
-  static parsePointToState = (point) => ({ ...point });
-
   static parseStateToPoint = (state) => {
     const point = { ...state };
 
     return point;
   };
+
+  static parsePointToState = (point) => ({ ...point });
 }

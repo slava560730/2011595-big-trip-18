@@ -8,8 +8,7 @@ export const humanizeTime = (date) => dayjs(date).format('hh:mm');
 export const humanizeEditDate = (date) => dayjs(date).format('DD/MM/YY hh:mm');
 
 export const isPointInFuture = ({ dateFrom }) =>
-  dayjs().isSame(dayjs(dateFrom)) ||
-  dayjs().isBefore(dayjs(dateFrom));
+  dayjs().isSame(dayjs(dateFrom)) || dayjs().isBefore(dayjs(dateFrom));
 
 export const isPointInPast = ({ dateTo }) => dayjs().isAfter(dayjs(dateTo));
 

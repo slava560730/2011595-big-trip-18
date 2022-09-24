@@ -1,3 +1,5 @@
+import dayjs from 'dayjs';
+
 export const DESTINATION_DESCRIPTIONS = [
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
   'Cras aliquet varius magna, non porta ligula feugiat eget.',
@@ -70,3 +72,19 @@ export const MinSecInterval = {
   MIN: 0,
   MAX: 60,
 };
+
+export const BLANK_POINT = {
+  basePrice: 0,
+  type: OFFER_TYPES[0],
+  dateFrom: dayjs(),
+  dateTo: dayjs(),
+  offers: [],
+  destination: null,
+};
+
+export const BLANK_PICTURES = [
+  {
+    src: '',
+    description: '',
+  },
+];

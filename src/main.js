@@ -5,6 +5,10 @@ import DestinationsModel from './model/destinations-model.js';
 import OffersByTypeModel from './model/offers-by-type-model.js';
 import FilterModel from './model/filter-model.js';
 import FilterPresenter from './presenter/filter-presenter.js';
+// import PointsApiService from './model/points-api-service.js';
+
+// const AUTHORIZATION = 'Basic hgjhg23gjhui1243yuhg3hgf3';
+// const END_POINT = 'https://18.ecmascript.pages.academy/task-manager';
 
 const siteHeaderElement = document.querySelector('.page-header');
 const siteMainElement = document.querySelector('.page-main');
@@ -12,6 +16,7 @@ const tripFiltersElement = siteHeaderElement.querySelector('.trip-controls__filt
 const tripEventsElement = siteMainElement.querySelector('.trip-events');
 const newEventBtn = document.querySelector('.trip-main__event-add-btn');
 
+// const pointsModel = new PointsModel(new PointsApiService(END_POINT, AUTHORIZATION));
 const pointsModel = new PointsModel();
 const filterModel = new FilterModel();
 const offersModel = new OffersModel();
@@ -21,7 +26,8 @@ const tripEventsPresenter = new TripEventsPresenter(tripEventsElement,
   pointsModel,
   offersModel,
   destinationsModel,
-  offersByTypeModel, filterModel);
+  offersByTypeModel,
+  filterModel);
 const filterPresenter = new FilterPresenter(tripFiltersElement, filterModel, pointsModel);
 
 const handleNewEventFormClose = () => {

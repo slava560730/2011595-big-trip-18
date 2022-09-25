@@ -263,8 +263,7 @@ export default class EditPointView extends AbstractStatefulView {
     const dateEndInput = this.element.querySelector('input[name="event-end-time"]');
     this.#datepickerTo = flatpickr(dateEndInput, {
       enableTime: true,
-      // eslint-disable-next-line camelcase
-      time_24hr: true,
+      ['time_24hr']: true,
       defaultDate: dateEndInput.value,
       dateFormat: 'd/m/y H:i',
       minDate: dateStartInput.value,
@@ -277,8 +276,7 @@ export default class EditPointView extends AbstractStatefulView {
     const dateEndInput = this.element.querySelector('input[name="event-end-time"]');
     this.#datepickerFrom = flatpickr(dateStartInput, {
       enableTime: true,
-      // eslint-disable-next-line camelcase
-      time_24hr: true,
+      ['time_24hr']: true,
       defaultDate: dateStartInput.value,
       dateFormat: 'd/m/y H:i',
       maxDate: dateEndInput.value,

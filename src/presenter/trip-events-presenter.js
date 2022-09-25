@@ -4,7 +4,6 @@ import PointsEmpty from '../view/points-empty.js';
 import {
   FilterType,
   SortType,
-  TextFromFilter,
   UpdateType,
   UserAction,
 } from '../util/view-const.js';
@@ -195,7 +194,7 @@ export default class TripEventsPresenter {
     const pointCount = points.length;
 
     if (pointCount === 0) {
-      this.#renderText(TextFromFilter.EVERYTHING);
+      this.#renderText();
       return;
     }
 

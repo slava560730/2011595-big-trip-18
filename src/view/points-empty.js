@@ -2,9 +2,9 @@ import AbstractView from '../framework/view/abstract-view.js';
 import { FilterType } from '../util/view-const.js';
 
 const EmptyListTextType = {
-  [FilterType.EVERYTHING]: 'Click "NEW EVENT" in menu to create your first waypoint',
-  [FilterType.FUTURE]: 'There are no future waypoints now',
-  [FilterType.PAST]: 'There are no past waypoints now',
+  [FilterType.EVERYTHING]: 'Click New Event to create your first point',
+  [FilterType.FUTURE]: 'There are no future events now',
+  [FilterType.PAST]: 'There are no past events now',
 };
 
 const createNoPointsTemplate = (filterType) =>

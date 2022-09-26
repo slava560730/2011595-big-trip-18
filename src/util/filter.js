@@ -1,4 +1,4 @@
-import { FilterType } from './view-const.js';
+import { FilterType } from './const.js';
 import { isPointInFuture, isPointInPast } from './point.js';
 
 export const filter = {

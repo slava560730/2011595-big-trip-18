@@ -1,34 +1,5 @@
 import dayjs from 'dayjs';
 
-export const DESTINATION_DESCRIPTIONS = [
-  'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-  'Cras aliquet varius magna, non porta ligula feugiat eget.',
-  'Aliquam id orci ut lectus varius viverra. Nullam nunc ex, sollicitudin eget ante.',
-  'Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum. ',
-  'Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus.',
-];
-
-export const IdRange = {
-  MIN: 1,
-  MAX: 5,
-};
-
-export const DESTINATION_NAMES = [
-  'Tokyo',
-  'Rio',
-  'Berlin',
-  'Bogota',
-  'Denver',
-  'Palermo',
-  'Lisbon',
-  'Nairobi',
-];
-
-export const PicRange = {
-  MIN: 1,
-  MAX: 10,
-};
-
 export const OFFER_TYPES = [
   'taxi',
   'bus',
@@ -41,41 +12,9 @@ export const OFFER_TYPES = [
   'restaurant',
 ];
 
-export const OFFER_TITLES = [
-  'Upgrade to a 1',
-  'Upgrade to a 2',
-  'Upgrade to a 3',
-  'Upgrade to a 4',
-  'Upgrade to a 5',
-  'Upgrade to a 6',
-  'Upgrade to a 7',
-  'Upgrade to a 8',
-  'Upgrade to a 9',
-];
-
-export const PriceRange = {
-  MIN: 1,
-  MAX: 300,
-};
-
-export const BasePriceRange = {
-  MIN: 100,
-  MAX: 3000,
-};
-
-export const HoursInterval = {
-  MIN: 0,
-  MAX: 24,
-};
-
-export const MinSecInterval = {
-  MIN: 0,
-  MAX: 60,
-};
-
 export const BLANK_POINT = {
   basePrice: 0,
-  type: OFFER_TYPES[0],
+  type: 'taxi',
   dateFrom: dayjs(),
   dateTo: dayjs(),
   offers: [],

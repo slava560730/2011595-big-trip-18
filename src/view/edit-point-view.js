@@ -1,23 +1,15 @@
 import { getWordCapitalized, humanizeEditDate } from '../util/point.js';
-import { DESTINATION_NAMES, OFFER_TYPES } from '../mock/const.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import flatpickr from 'flatpickr';
 import he from 'he';
 
 import 'flatpickr/dist/flatpickr.min.css';
 import 'flatpickr/dist/themes/material_blue.css';
-import { prefixToLowerDash } from '../mock/util.js';
+import { ORIGIN_FIX } from '../util/const.js';
+import {BLANK_POINT, OFFER_TYPES} from '../mock/const.js';
+import {prefixToLowerDash} from '../util/common.js';
 
-const BLANK_POINT = {
-  basePrice: 0,
-  type: '',
-  dateFrom: null,
-  dateTo: null,
-  destination: '',
-  offers: [],
-};
-
-const createEditPointTemplate = (points, offersData, destinationsData, offersByTypeData) => {
+const createEditPointTemplate = (points, offersData, destinationsData, cities, types) => {
   const {
     basePrice = 0,
     type = '',
@@ -45,16 +37,16 @@ const createEditPointTemplate = (points, offersData, destinationsData, offersByT
 
   const createTypeEditTemplate = (currentType, checkedType) => `
     <div class="event__type-item">
-      <input id="event-type-${currentType}-${OFFER_TYPES.indexOf(currentType)}"
+      <input id="event-type-${currentType}-${types.indexOf(currentType)}"
        class="event__type-input  visually-hidden" type="radio" name="event-type" value="${currentType}"
         ${isTypeChecked(checkedType, currentType)}>
       <label class="event__type-label  event__type-label--${currentType}"
-       for="event-type-${currentType}-${OFFER_TYPES.indexOf(currentType)}">
+       for="event-type-${currentType}-${types.indexOf(currentType)}">
         ${getWordCapitalized(currentType)}</label>
     </div>`;
 
   const createTypesEditTemplate = (checkedType) =>
-    OFFER_TYPES.map((currentType) => createTypeEditTemplate(currentType, checkedType)).join('');
+    types.map((currentType) => createTypeEditTemplate(currentType, checkedType)).join('');
 
   const isOfferChecked = (offer) => (offers.includes(offer.id) ? 'checked' : '');
 
@@ -76,7 +68,7 @@ const createEditPointTemplate = (points, offersData, destinationsData, offersByT
   };
 
   const createOffersEditTemplate = () => {
-    const offerEditByType = offersByTypeData.find((offer) => offer.type === type);
+    const offerEditByType = offersData.find((offer) => offer.type === type);
 
     return offerEditByType.offers.map((offer) => createOfferEditTemplate(offer)).join('');
   };
@@ -84,17 +76,20 @@ const createEditPointTemplate = (points, offersData, destinationsData, offersByT
   const offersEditTemplate = createOffersEditTemplate();
 
   const createDataListDestination = (selectedCity) =>
-    DESTINATION_NAMES.map(
-      (city) => `
+    cities
+      .map(
+        (city) => `
     <option value="${city}" ${selectedCity === city ? 'selected' : ''}></option>
        `
-    ).join('');
+      )
+      .join('');
 
   const createDestinationListTemplate = (selectedCity) => `
     <label class="event__label  event__type-output" for="event-destination-1">
     ${type}
     </label>
-    <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${he.encode(selectedCity)}" list="destination-list-1">
+    <input class="event__input  event__input--destination" id="event-destination-1" type="text"
+     name="event-destination" value="${he.encode(selectedCity)}" list="destination-list-1">
     <datalist id="destination-list-1">
     ${createDataListDestination(selectedCity)}
     </datalist>`;
@@ -167,14 +162,15 @@ const createEditPointTemplate = (points, offersData, destinationsData, offersByT
 };
 
 export default class EditPointView extends AbstractStatefulView {
-  #offer = null;
-  #destination = null;
-  #offerByType = null;
+  #offers = null;
+  #destinations = null;
+  #cities = null;
+  #types = null;
   #datepickerFrom = null;
   #datepickerTo = null;
   #checkboxesOfOffers = null;
 
-  constructor(point = BLANK_POINT, offer, destination, offerByType) {
+  constructor(point = BLANK_POINT, offers, destinations) {
     super();
 
     if (!point) {
@@ -183,17 +179,18 @@ export default class EditPointView extends AbstractStatefulView {
 
     this._state = EditPointView.parsePointToState(point);
 
-    this.#offer = offer;
-    this.#destination = destination;
-    this.#offerByType = offerByType;
+    this.#offers = offers;
+    this.#destinations = destinations;
 
+    this.#cities = this.#destinations.map((dest) => dest.name);
+    this.#types = offers ? offers.map((offer) => offer.type) : OFFER_TYPES;
     this.#setInnerHandlers();
     this.#setToDatepicker();
     this.#setFromDatepicker();
   }
 
   get template() {
-    return createEditPointTemplate(this._state, this.#offer, this.#destination, this.#offerByType);
+    return createEditPointTemplate(this._state, this.#offers, this.#destinations, this.#cities, this.#types);
   }
 
   removeElement = () => {
@@ -312,7 +309,7 @@ export default class EditPointView extends AbstractStatefulView {
 
     if (evt.target.value) {
       this.updateElement({
-        destination: DESTINATION_NAMES.indexOf(evt.target.value),
+        destination: Number(this.#cities.indexOf(evt.target.value) + ORIGIN_FIX),
       });
     }
   };

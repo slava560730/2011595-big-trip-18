@@ -1,5 +1,5 @@
 import { filter } from '../util/filter.js';
-import { FilterType, UpdateType } from '../util/view-const.js';
+import { FilterType, UpdateType } from '../util/const.js';
 import { remove, render, replace } from '../framework/render.js';
 import HeaderFiltersView from '../view/header-filters-view.js';
 

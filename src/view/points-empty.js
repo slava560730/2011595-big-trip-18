@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { FilterType } from '../util/view-const.js';
+import { FilterType } from '../util/const.js';
 
 const EmptyListTextType = {
   [FilterType.EVERYTHING]: 'Click New Event to create your first point',

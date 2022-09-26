@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { Minutes } from './view-const.js';
+import { Minutes } from './const.js';
 
 export const getWordCapitalized = (word) => word[0].toUpperCase() + word.slice(1);
 

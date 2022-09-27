@@ -4,10 +4,9 @@ import PointsEmpty from '../view/points-empty.js';
 import {
   FilterType,
   SortType,
-  TextFromFilter,
   UpdateType,
   UserAction,
-} from '../util/view-const.js';
+} from '../util/const.js';
 import PointPresenter from './point-presenter.js';
 import { sortByDay, sortByPrice, sortByTime } from '../util/point.js';
 import TripSortView from '../view/trip-sort-view.js';
@@ -16,9 +15,11 @@ import HeaderInfoView from '../view/header-info-view.js';
 import { filter } from '../util/filter.js';
 import NewPointPresenter from './new-point-presenter.js';
 import { BLANK_POINT } from '../mock/const.js';
+import LoadingView from '../view/loading-view.js';
 
 export default class TripEventsPresenter {
   #tripList = new TripListView();
+  #loadingComponent = new LoadingView();
   #sortComponent = null;
   #headerInfoComponent = null;
   #filterModel = null;
@@ -27,25 +28,19 @@ export default class TripEventsPresenter {
   #tripEventsContainer = null;
 
   #pointsModel = null;
-  #offersModel = null;
-  #destinationsModel = null;
-  #offersByTypeModel = null;
 
   #tripOffers = null;
   #tripDestinations = null;
-  #tripOffersByType = null;
 
   #pointsPresenter = new Map();
   #pointNewPresenter = null;
   #currentSortType = SortType.DAY;
   #filterType = FilterType.EVERYTHING;
+  #isLoading = true;
 
   constructor(
     tripEventsContainer,
     pointsModel,
-    offersModel,
-    destinationsModel,
-    offersByTypeModel,
     filterModel
   ) {
     this.#tripEventsContainer = tripEventsContainer;
@@ -55,17 +50,11 @@ export default class TripEventsPresenter {
     this.#filterModel = filterModel;
     this.#filterModel.addObserver(this.#handleModelEvent);
     this.#pointNewPresenter = new NewPointPresenter(this.#tripList.element, this.#handleViewAction);
-
-    this.#offersModel = offersModel;
-    this.#destinationsModel = destinationsModel;
-    this.#offersByTypeModel = offersByTypeModel;
-
-    this.#tripOffers = [...this.#offersModel.offers];
-    this.#tripDestinations = [...this.#destinationsModel.destinations];
-    this.#tripOffersByType = [...this.#offersByTypeModel.offersByType];
   }
 
   get points() {
+    this.#tripDestinations = this.#pointsModel.destinations;
+    this.#tripOffers = this.#pointsModel.offers;
     this.#filterType = this.#filterModel.filter;
     const points = this.#pointsModel.points;
     const filteredPoints = filter[this.#filterType](points);
@@ -133,6 +122,11 @@ export default class TripEventsPresenter {
         this.#clearContent({ resetSortType: true });
         this.#renderContent();
         break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.#renderContent();
+        break;
     }
   };
 
@@ -147,24 +141,27 @@ export default class TripEventsPresenter {
     render(this.#noPointsComponent, this.#tripEventsContainer);
   };
 
+  #renderLoading = () => {
+    render(this.#loadingComponent, this.#tripEventsContainer, RenderPosition.AFTERBEGIN);
+  };
+
   #renderPoint = (
     point,
     offers = this.#tripOffers,
-    destinations = this.#tripDestinations,
-    offersByType = this.#tripOffersByType
+    destinations = this.#tripDestinations
   ) => {
     const pointPresenter = new PointPresenter(
       this.#tripList.element,
       this.#handleViewAction,
       this.#handleModeChange
     );
-    pointPresenter.init(point, offers, destinations, offersByType);
+    pointPresenter.init(point, offers, destinations);
     this.#pointsPresenter.set(point.id, pointPresenter);
   };
 
   #renderPoints = (points) => {
     points.forEach((point) =>
-      this.#renderPoint(point, this.#tripOffers, this.#tripDestinations, this.#tripOffersByType)
+      this.#renderPoint(point, this.#tripOffers, this.#tripDestinations)
     );
   };
 
@@ -179,6 +176,7 @@ export default class TripEventsPresenter {
     this.#pointsPresenter.clear();
 
     remove(this.#headerInfoComponent);
+    remove(this.#loadingComponent);
     remove(this.#sortComponent);
 
     if (this.#noPointsComponent) {
@@ -191,11 +189,16 @@ export default class TripEventsPresenter {
   };
 
   #renderContent = () => {
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
+
     const points = this.points;
     const pointCount = points.length;
 
     if (pointCount === 0) {
-      this.#renderText(TextFromFilter.EVERYTHING);
+      this.#renderText();
       return;
     }
 
@@ -215,8 +218,7 @@ export default class TripEventsPresenter {
       callback,
       BLANK_POINT,
       this.#tripOffers,
-      this.#tripDestinations,
-      this.#tripOffersByType
+      this.#tripDestinations
     );
   };
 }

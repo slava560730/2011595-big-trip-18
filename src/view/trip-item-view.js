@@ -1,7 +1,7 @@
 import { humanizeDate, humanizeTime, pointDuration } from '../util/point.js';
 import AbstractView from '../framework/view/abstract-view.js';
 
-const createTripItemTemplate = (points, offersData, destinationsData, offersByTypeData) => {
+const createTripItemTemplate = (points, offersData, destinationsData) => {
   const { basePrice, type, dateFrom, dateTo, destination, isFavorite, offers } = points;
 
   const createOfferTemplate = (offer) => `
@@ -13,7 +13,7 @@ const createTripItemTemplate = (points, offersData, destinationsData, offersByTy
   `;
 
   const createOffersTemplate = () => {
-    const offerByPointType = offersByTypeData.find((offer) => offer.type === type);
+    const offerByPointType = offersData.find((offer) => offer.type === type);
 
     return offers
       .map((offerId) => {
@@ -73,18 +73,16 @@ export default class TripItemView extends AbstractView {
   #point = null;
   #offer = null;
   #destination = null;
-  #offerByType = null;
 
-  constructor(point, offer, destination, offerByType) {
+  constructor(point, offer, destination) {
     super();
     this.#point = point;
     this.#offer = offer;
     this.#destination = destination;
-    this.#offerByType = offerByType;
   }
 
   get template() {
-    return createTripItemTemplate(this.#point, this.#offer, this.#destination, this.#offerByType);
+    return createTripItemTemplate(this.#point, this.#offer, this.#destination);
   }
 
   setRollupBtnClickHandler(callback) {

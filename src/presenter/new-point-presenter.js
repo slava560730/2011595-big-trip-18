@@ -1,5 +1,5 @@
 import { remove, render, RenderPosition } from '../framework/render.js';
-import { UpdateType, UserAction } from '../util/view-const.js';
+import { UpdateType, UserAction } from '../util/const.js';
 import { nanoid } from 'nanoid';
 import AddPointView from '../view/add-point-view.js';
 
@@ -14,7 +14,7 @@ export default class NewPointPresenter {
     this.#changeData = changeData;
   }
 
-  init = (callback, point, tripOffers, tripDestinations, tripOffersByType) => {
+  init = (callback, point, tripOffers, tripDestinations) => {
     this.#destroyCallback = callback;
 
     if (this.#pointEditComponent !== null) {
@@ -23,8 +23,7 @@ export default class NewPointPresenter {
     this.#pointEditComponent = new AddPointView(
       point,
       tripOffers,
-      tripDestinations,
-      tripOffersByType
+      tripDestinations
     );
 
     this.#pointEditComponent.setResetBtnClickHandler(this.#resetForm);

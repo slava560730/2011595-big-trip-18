@@ -77,8 +77,8 @@ export default class TripItemView extends AbstractView {
   constructor(point, offer, destination) {
     super();
     this.#point = point;
-    this.#destination = destination;
     this.#offer = offer;
+    this.#destination = destination;
   }
 
   get template() {

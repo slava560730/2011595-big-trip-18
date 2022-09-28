@@ -1,5 +1,3 @@
-import dayjs from 'dayjs';
-
 export const OFFER_TYPES = [
   'taxi',
   'bus',
@@ -11,15 +9,6 @@ export const OFFER_TYPES = [
   'sightseeing',
   'restaurant',
 ];
-
-export const BLANK_POINT = {
-  basePrice: 0,
-  type: 'taxi',
-  dateFrom: dayjs(),
-  dateTo: dayjs(),
-  offers: [],
-  destination: null,
-};
 
 export const BLANK_PICTURES = [
   {

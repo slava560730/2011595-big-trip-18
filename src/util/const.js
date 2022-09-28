@@ -1,3 +1,5 @@
+import dayjs from 'dayjs';
+
 export const FilterType = {
   EVERYTHING: 'everything',
   FUTURE: 'future',
@@ -27,6 +29,15 @@ export const UpdateType = {
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
   INIT: 'INIT',
+};
+
+export const BLANK_POINT = {
+  basePrice: 0,
+  type: 'taxi',
+  dateFrom: dayjs(),
+  dateTo: dayjs(),
+  offers: [],
+  destination: null,
 };
 
 export const ORIGIN_FIX = 1;

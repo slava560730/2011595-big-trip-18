@@ -47,7 +47,7 @@ const createTripItemTemplate = (points, offersData, destinationsData) => {
                     &mdash;
                     <time class="event__end-time" datetime="${dateTo}">${humanizedTimeTo}</time>
                   </p>
-                  <p class="event__duration">${pointDuration(dateTo, dateFrom)}</p>
+                  <p class="event__duration">${(dateTo && dateFrom) ? pointDuration(dateTo, dateFrom) : ''}</p>
                 </div>
                 <p class="event__price">
                   &euro;&nbsp;<span class="event__price-value">${basePrice}</span>

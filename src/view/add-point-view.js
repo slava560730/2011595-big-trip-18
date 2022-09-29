@@ -1,12 +1,11 @@
 import { getWordCapitalized, humanizeEditDate } from '../util/point.js';
-import { BLANK_PICTURES } from '../mock/const.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import flatpickr from 'flatpickr';
 import he from 'he';
 
 import 'flatpickr/dist/flatpickr.min.css';
 import 'flatpickr/dist/themes/material_blue.css';
-import { ORIGIN_FIX } from '../util/const.js';
+import {BLANK_PICTURES, ORIGIN_FIX} from '../util/const.js';
 import { getKeyByIdFromData, prefixToLowerDash } from '../util/common.js';
 
 const createAddPointTemplate = (points, offersData, destinationsData, cities, types) => {
@@ -21,11 +20,13 @@ const createAddPointTemplate = (points, offersData, destinationsData, cities, ty
       ? getKeyByIdFromData(destination, destinationsData, 'pictures')
       : BLANK_PICTURES;
 
+  const isNoPictures = pictures === BLANK_PICTURES;
+
   const humanizedAddDateFrom = humanizeEditDate(dateFrom);
   const humanizedAddDateTo = humanizeEditDate(dateTo);
 
   const createPhotoTemplate = (src, pictureDescription) =>
-    pictures !== BLANK_PICTURES
+    !isNoPictures
       ? `<img class="event__photo" src="${src}" alt="${pictureDescription}">`
       : '';
 
@@ -154,11 +155,11 @@ const createAddPointTemplate = (points, offersData, destinationsData, cities, ty
                   </section>
 
                   <section class="event__section  event__section--destination">
-                    <h3 class="event__section-title  event__section-title--destination">${pictures === BLANK_PICTURES
+                    <h3 class="event__section-title  event__section-title--destination">${isNoPictures
     ? '' : 'Destination'}</h3>
                     <p class="event__destination-description">${description}</p>
 ${
-  pictures === BLANK_PICTURES
+  isNoPictures
     ? createPhotosTemplate(pictures)
     : `<div class="event__photos-container">
                         <div class="event__photos-tape">

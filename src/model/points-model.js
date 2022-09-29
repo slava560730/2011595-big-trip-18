@@ -1,6 +1,5 @@
 import Observable from '../framework/observable.js';
 import { UpdateType } from '../util/const.js';
-import {OFFER_TYPES} from '../mock/const.js';
 
 export default class PointsModel extends Observable {
   #pointsApiService = null;
@@ -42,7 +41,7 @@ export default class PointsModel extends Observable {
     try {
       this.#offers = await this.#pointsApiService.offers;
     } catch (err) {
-      this.#offers = OFFER_TYPES;
+      this.#offers = [];
     }
 
     this._notify(UpdateType.INIT);

@@ -11,7 +11,7 @@ const END_POINT = 'https://18.ecmascript.pages.academy/big-trip';
 const siteHeaderElement = document.querySelector('.page-header');
 const siteMainElement = document.querySelector('.page-main');
 const tripFiltersElement = siteHeaderElement.querySelector('.trip-controls__filters');
-const tripInfoElement = siteHeaderElement.querySelector('.trip-controls__filters');
+const tripInfoElement = siteHeaderElement.querySelector('.trip-main');
 const tripEventsElement = siteMainElement.querySelector('.trip-events');
 const newEventBtn = document.querySelector('.trip-main__event-add-btn');
 

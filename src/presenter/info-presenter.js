@@ -1,5 +1,5 @@
 import {remove, render, RenderPosition, replace} from '../framework/render.js';
-import {sortByTime} from '../util/point.js';
+import {sortByDay} from '../util/point.js';
 import HeaderInfoView from '../view/header-info-view.js';
 
 export default class InfoPresenter {
@@ -16,7 +16,7 @@ export default class InfoPresenter {
   }
 
   get sortedPoints() {
-    return this.#pointsModel.points.sort(sortByTime);
+    return this.#pointsModel.points.sort(sortByDay);
   }
 
   init = () => {

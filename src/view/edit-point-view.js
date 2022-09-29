@@ -6,7 +6,7 @@ import he from 'he';
 import 'flatpickr/dist/flatpickr.min.css';
 import 'flatpickr/dist/themes/material_blue.css';
 import { ORIGIN_FIX} from '../util/const.js';
-import { prefixToLowerDash } from '../util/common.js';
+import {getKeyByIdFromData, prefixToLowerDash} from '../util/common.js';
 
 const createEditPointTemplate = (points, offersData, destinationsData, cities, types) => {
   const {
@@ -21,9 +21,12 @@ const createEditPointTemplate = (points, offersData, destinationsData, cities, t
     isDeleting,
   } = points;
 
-  const name = destinationsData.find((el) => el.id === destination).name;
-  const description = destinationsData.find((el) => el.id === destination).description;
-  const pictures = destinationsData.find((el) => el.id === destination).pictures;
+  // const name = destinationsData.find((el) => el.id === destination).name;
+  const name = getKeyByIdFromData(destination, destinationsData, 'name');
+  const description = getKeyByIdFromData(destination, destinationsData, 'description');
+  const pictures = getKeyByIdFromData(destination, destinationsData, 'pictures');
+  // const description = destinationsData.find((el) => el.id === destination).description;
+  // const pictures = destinationsData.find((el) => el.id === destination).pictures;
 
   const humanizedEditDateFrom = dateFrom !== null ? humanizeEditDate(dateFrom) : '';
   const humanizedEditDateTo = dateFrom !== null ? humanizeEditDate(dateTo) : '';

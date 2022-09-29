@@ -25,19 +25,18 @@ export default class PointPresenter {
     this.#changeMode = changeMode;
   }
 
-  init = (point, tripOffers, tripDestinations, tripOffersByType) => {
+  init = (point, tripOffers, tripDestinations) => {
     this.#point = point;
 
     const prevPointComponent = this.#pointComponent;
     const prevPointEditComponent = this.#pointEditComponent;
 
-    this.#pointComponent = new TripItemView(point, tripOffers, tripDestinations, tripOffersByType);
+    this.#pointComponent = new TripItemView(point, tripOffers, tripDestinations);
 
     this.#pointEditComponent = new EditPointView(
       point,
       tripOffers,
-      tripDestinations,
-      tripOffersByType
+      tripDestinations
     );
 
     this.#pointComponent.setRollupBtnClickHandler(this.#handleOpenForm);

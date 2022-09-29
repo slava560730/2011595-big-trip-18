@@ -1,6 +1,5 @@
 import { remove, render, RenderPosition } from '../framework/render.js';
 import { UpdateType, UserAction } from '../util/const.js';
-import { nanoid } from 'nanoid';
 import AddPointView from '../view/add-point-view.js';
 
 export default class NewPointPresenter {
@@ -20,18 +19,32 @@ export default class NewPointPresenter {
     if (this.#pointEditComponent !== null) {
       return;
     }
-    this.#pointEditComponent = new AddPointView(
-      point,
-      tripOffers,
-      tripDestinations
-    );
+    this.#pointEditComponent = new AddPointView(point, tripOffers, tripDestinations);
 
-    this.#pointEditComponent.setResetBtnClickHandler(this.#resetForm);
-    this.#pointEditComponent.setFormSubmitHandler(this.#submitForm);
+    this.#pointEditComponent.setResetBtnClickHandler(this.#handleResetForm);
+    this.#pointEditComponent.setFormSubmitHandler(this.#handleSubmitForm);
 
     render(this.#pointEditComponent, this.#pointListContainer, RenderPosition.AFTERBEGIN);
 
     document.addEventListener('keydown', this.#escKeyDownHandler);
+  };
+
+  setSaving = () => {
+    this.#pointEditComponent.updateElement({
+      isDisabled: true,
+      isSaving: true,
+    });
+  };
+
+  setAborting = () => {
+    const resetFormState = () => {
+      this.#pointEditComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+      });
+    };
+
+    this.#pointEditComponent.shake(resetFormState);
   };
 
   destroy = () => {
@@ -53,12 +66,12 @@ export default class NewPointPresenter {
     }
   };
 
-  #resetForm = () => {
+  #handleResetForm = () => {
     this.destroy();
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   };
 
-  #submitForm = (point) => {
-    this.#changeData(UserAction.ADD_POINT, UpdateType.MINOR, { id: nanoid(), ...point });
+  #handleSubmitForm = (point) => {
+    this.#changeData(UserAction.ADD_POINT, UpdateType.MINOR, point);
   };
 }

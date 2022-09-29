@@ -1,3 +1,5 @@
+import dayjs from 'dayjs';
+
 export const FilterType = {
   EVERYTHING: 'everything',
   FUTURE: 'future',
@@ -16,17 +18,26 @@ export const SortType = {
   TIME: 'time',
 };
 
+export const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+  INIT: 'INIT',
+};
+
 export const UserAction = {
   UPDATE_POINT: 'UPDATE_POINT',
   ADD_POINT: 'ADD_POINT',
   DELETE_POINT: 'DELETE_POINT',
 };
 
-export const UpdateType = {
-  PATCH: 'PATCH',
-  MINOR: 'MINOR',
-  MAJOR: 'MAJOR',
-  INIT: 'INIT',
+export const BLANK_POINT = {
+  basePrice: 0,
+  type: 'taxi',
+  dateFrom: dayjs(),
+  dateTo: dayjs(),
+  offers: [],
+  destination: null,
 };
 
 export const ORIGIN_FIX = 1;

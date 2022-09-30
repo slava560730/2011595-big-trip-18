@@ -41,3 +41,11 @@ export const BLANK_POINT = {
 };
 
 export const ORIGIN_FIX = 1;
+export const MAX_SHOW_NAMES_CITIES = 3;
+
+export const BLANK_PICTURES = [
+  {
+    src: '',
+    description: '',
+  },
+];

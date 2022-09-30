@@ -12,7 +12,6 @@ import {
 import PointPresenter from './point-presenter.js';
 import { sortByDay, sortByPrice, sortByTime } from '../util/point.js';
 import TripSortView from '../view/trip-sort-view.js';
-import HeaderInfoView from '../view/header-info-view.js';
 
 import { filter } from '../util/filter.js';
 import NewPointPresenter from './new-point-presenter.js';
@@ -156,12 +155,6 @@ export default class TripEventsPresenter {
     }
   };
 
-  #renderTripInfo = () => {
-    const tripMainElement = document.querySelector('.trip-main');
-    this.#headerInfoComponent = new HeaderInfoView();
-    render(this.#headerInfoComponent, tripMainElement, RenderPosition.AFTERBEGIN);
-  };
-
   #renderText = () => {
     this.#noPointsComponent = new PointsEmpty(this.#filterType);
     render(this.#noPointsComponent, this.#tripEventsContainer);
@@ -228,7 +221,6 @@ export default class TripEventsPresenter {
       return;
     }
 
-    this.#renderTripInfo();
     this.#renderSort();
     this.#renderPointList(points);
   };

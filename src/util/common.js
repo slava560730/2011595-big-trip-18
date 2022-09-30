@@ -3,3 +3,5 @@ export const prefixToLowerDash = (prefix) => {
 
   return prefix.replace(re, '-').toLowerCase();
 };
+
+export const getKeyByIdFromData = (pointsData, searchData, desiredKey) => searchData.find((el) => el.id === pointsData)[desiredKey];

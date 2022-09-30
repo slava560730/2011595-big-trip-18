@@ -5,8 +5,8 @@ import he from 'he';
 
 import 'flatpickr/dist/flatpickr.min.css';
 import 'flatpickr/dist/themes/material_blue.css';
-import { ORIGIN_FIX} from '../util/const.js';
-import { prefixToLowerDash } from '../util/common.js';
+import { ORIGIN_FIX } from '../util/const.js';
+import { getKeyByIdFromData, prefixToLowerDash } from '../util/common.js';
 
 const createEditPointTemplate = (points, offersData, destinationsData, cities, types) => {
   const {
@@ -21,9 +21,9 @@ const createEditPointTemplate = (points, offersData, destinationsData, cities, t
     isDeleting,
   } = points;
 
-  const name = destinationsData.find((el) => el.id === destination).name;
-  const description = destinationsData.find((el) => el.id === destination).description;
-  const pictures = destinationsData.find((el) => el.id === destination).pictures;
+  const name = getKeyByIdFromData(destination, destinationsData, 'name');
+  const description = getKeyByIdFromData(destination, destinationsData, 'description');
+  const pictures = getKeyByIdFromData(destination, destinationsData, 'pictures');
 
   const humanizedEditDateFrom = dateFrom !== null ? humanizeEditDate(dateFrom) : '';
   const humanizedEditDateTo = dateFrom !== null ? humanizeEditDate(dateTo) : '';
@@ -140,8 +140,10 @@ const createEditPointTemplate = (points, offersData, destinationsData, cities, t
                      value="${basePrice}" ${isDisabled ? 'disabled' : ''} min="1">
                   </div>
 
-                  <button class="event__save-btn  btn  btn--blue" type="submit">${isSaving ? 'Saving...' : 'Save'}</button>
-                  <button class="event__reset-btn" type="reset">${isDeleting ? 'Deleting...' : 'Delete'}</button>
+                  <button class="event__save-btn  btn  btn--blue" type="submit">
+${isSaving ? 'Saving...' : 'Save'}</button>
+                  <button class="event__reset-btn" type="reset">
+${isDeleting ? 'Deleting...' : 'Delete'}</button>
                   <button class="event__rollup-btn" type="button">
                     <span class="visually-hidden">Open event</span>
                   </button>

@@ -5,7 +5,7 @@ import he from 'he';
 
 import 'flatpickr/dist/flatpickr.min.css';
 import 'flatpickr/dist/themes/material_blue.css';
-import {BLANK_PICTURES, ORIGIN_FIX} from '../util/const.js';
+import { BLANK_PICTURES, ORIGIN_FIX } from '../util/const.js';
 import { getKeyByIdFromData, prefixToLowerDash } from '../util/common.js';
 
 const createAddPointTemplate = (points, offersData, destinationsData, cities, types) => {
@@ -26,9 +26,7 @@ const createAddPointTemplate = (points, offersData, destinationsData, cities, ty
   const humanizedAddDateTo = humanizeEditDate(dateTo);
 
   const createPhotoTemplate = (src, pictureDescription) =>
-    !isNoPictures
-      ? `<img class="event__photo" src="${src}" alt="${pictureDescription}">`
-      : '';
+    !isNoPictures ? `<img class="event__photo" src="${src}" alt="${pictureDescription}">` : '';
 
   const createPhotosTemplate = (dataPictures) =>
     dataPictures.map((picture) => createPhotoTemplate(picture.src, picture.description)).join('');
@@ -40,7 +38,7 @@ const createAddPointTemplate = (points, offersData, destinationsData, cities, ty
     <div class="event__type-item">
       <input id="event-type-${currentType}-${types.indexOf(currentType)}"
        class="event__type-input  visually-hidden" type="radio" name="event-type" value="${currentType}"
-        ${isTypeChecked(checkedType, currentType)}>
+        ${isTypeChecked(checkedType, currentType)} ${isDisabled ? 'disabled' : ''}>
       <label class="event__type-label  event__type-label--${currentType}"
        for="event-type-${currentType}-${types.indexOf(currentType)}">
         ${getWordCapitalized(currentType)}</label>
@@ -72,7 +70,16 @@ const createAddPointTemplate = (points, offersData, destinationsData, cities, ty
   const createOffersAddTemplate = () => {
     const offerAddByType = offersData.find((offer) => offer.type === type);
 
-    return offerAddByType.offers.map((offer) => createOfferAddTemplate(offer)).join('');
+    if (offerAddByType.offers.length !== 0) {
+      return `<section class="event__details">
+                  <section class="event__section  event__section--offers">
+                    <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+                    <div class="event__available-offers">
+                    ${offerAddByType.offers.map((offer) => createOfferAddTemplate(offer)).join('')}
+                    </div>
+                  </section>`;
+    }
+    return '';
   };
 
   const offersAddTemplate = createOffersAddTemplate();
@@ -139,24 +146,15 @@ const createAddPointTemplate = (points, offersData, destinationsData, cities, ty
                   </div>
 
                   <button class="event__save-btn  btn  btn--blue"
-                   type="submit">${isSaving ? 'Saving...' : 'Save'}</button>
-                  <button class="event__reset-btn" type="reset">Delete</button>
-                  <button class="event__rollup-btn" type="button">
-                    <span class="visually-hidden">Open event</span>
-                  </button>
+                   type="submit" ${isDisabled ? 'disabled' : ''}>
+                    ${isSaving ? 'Saving...' : 'Save'}</button>
+                  <button class="event__reset-btn" type="reset"
+                    ${isDisabled ? 'disabled' : ''}>Cancel</button>
                 </header>
-
-                <section class="event__details">
-                  <section class="event__section  event__section--offers">
-                    <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-                    <div class="event__available-offers">
                     ${offersAddTemplate}
-                    </div>
-                  </section>
-
                   <section class="event__section  event__section--destination">
-                    <h3 class="event__section-title  event__section-title--destination">${isNoPictures
-    ? '' : 'Destination'}</h3>
+                    <h3 class="event__section-title  event__section-title--destination">
+                        ${isNoPictures ? '' : 'Destination'}</h3>
                     <p class="event__destination-description">${description}</p>
 ${
   isNoPictures
@@ -207,6 +205,14 @@ export default class AddPointView extends AbstractStatefulView {
     );
   }
 
+  _restoreHandlers = () => {
+    this.#setInnerHandlers();
+    this.setFormSubmitHandler(this._callback.formSubmit);
+    this.setResetBtnClickHandler(this._callback.resetClick);
+    this.#setToDatepicker();
+    this.#setFromDatepicker();
+  };
+
   removeElement = () => {
     super.removeElement();
 
@@ -236,10 +242,10 @@ export default class AddPointView extends AbstractStatefulView {
 
     this.element
       .querySelectorAll('.event__type-input')
-      .forEach((eventType) => eventType.addEventListener('click', this.#typeToggleHandler));
+      .forEach((eventType) => eventType.addEventListener('click', this.#typeToggleClickHandler));
 
     this.#checkboxesOfOffers.forEach((eventOffer) =>
-      eventOffer.addEventListener('change', this.#selectOffersToggleHandler)
+      eventOffer.addEventListener('change', this.#selectOffersToggleClickHandler)
     );
   };
 
@@ -251,6 +257,64 @@ export default class AddPointView extends AbstractStatefulView {
   destroyDatepickerTo = () => {
     this.#datepickerTo.destroy();
     this.#datepickerTo = null;
+  };
+
+  #selectOffersToggleClickHandler = () => {
+    const selectedOffers = [];
+
+    this.#checkboxesOfOffers.forEach((checkbox) =>
+      checkbox.checked ? selectedOffers.push(Number(checkbox.dataset.id)) : ''
+    );
+
+    this.updateElement({
+      offers: selectedOffers,
+    });
+  };
+
+  #typeToggleClickHandler = (evt) => {
+    evt.preventDefault();
+
+    if (evt.target.value) {
+      this.updateElement({
+        type: evt.target.value,
+        offers: [],
+      });
+    }
+  };
+
+  #destinationChangeHandler = (evt) => {
+    evt.preventDefault();
+
+    if (evt.target.value) {
+      this.updateElement({
+        destination: Number(this.#cities.indexOf(evt.target.value) + ORIGIN_FIX),
+      });
+    }
+  };
+
+  #priceChangeHandler = (evt) => {
+    evt.preventDefault();
+
+    if (evt.target.value) {
+      this.updateElement({
+        basePrice: evt.target.value,
+      });
+    }
+  };
+
+  #resetBtnClickHandler = () => {
+    this._callback.resetClick(AddPointView.parseStateToPoint(this._state));
+  };
+
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+
+    if (this._state.destination === null) {
+      this.shake();
+      return;
+    }
+
+    this._callback.formSubmit(AddPointView.parseStateToPoint(this._state));
   };
 
   #dateStartHandler = ([userDateStart]) => {
@@ -295,57 +359,6 @@ export default class AddPointView extends AbstractStatefulView {
     });
   };
 
-  #selectOffersToggleHandler = () => {
-    const selectedOffers = [];
-
-    this.#checkboxesOfOffers.forEach((checkbox) =>
-      checkbox.checked ? selectedOffers.push(Number(checkbox.dataset.id)) : ''
-    );
-
-    this.updateElement({
-      offers: selectedOffers,
-    });
-  };
-
-  #typeToggleHandler = (evt) => {
-    evt.preventDefault();
-
-    if (evt.target.value) {
-      this.updateElement({
-        type: evt.target.value,
-        offers: [],
-      });
-    }
-  };
-
-  #destinationChangeHandler = (evt) => {
-    evt.preventDefault();
-
-    if (evt.target.value) {
-      this.updateElement({
-        destination: Number(this.#cities.indexOf(evt.target.value) + ORIGIN_FIX),
-      });
-    }
-  };
-
-  #priceChangeHandler = (evt) => {
-    evt.preventDefault();
-
-    if (evt.target.value) {
-      this.updateElement({
-        basePrice: evt.target.value,
-      });
-    }
-  };
-
-  _restoreHandlers = () => {
-    this.#setInnerHandlers();
-    this.setFormSubmitHandler(this._callback.formSubmit);
-    this.setResetBtnClickHandler(this._callback.resetClick);
-    this.#setToDatepicker();
-    this.#setFromDatepicker();
-  };
-
   setResetBtnClickHandler(callback) {
     this._callback.resetClick = callback;
 
@@ -354,26 +367,11 @@ export default class AddPointView extends AbstractStatefulView {
       .addEventListener('click', this.#resetBtnClickHandler);
   }
 
-  #resetBtnClickHandler = () => {
-    this._callback.resetClick(AddPointView.parseStateToPoint(this._state));
-  };
-
   setFormSubmitHandler(callback) {
     this._callback.formSubmit = callback;
 
     this.element.querySelector('.event--edit').addEventListener('submit', this.#formSubmitHandler);
   }
-
-  #formSubmitHandler = (evt) => {
-    evt.preventDefault();
-
-    if (this._state.destination === null) {
-      this.shake();
-      return;
-    }
-
-    this._callback.formSubmit(AddPointView.parseStateToPoint(this._state));
-  };
 
   static parseStateToPoint = (state) => {
     const point = { ...state };

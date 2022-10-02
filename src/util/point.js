@@ -47,28 +47,9 @@ export const sortByDay = (pointA, pointB) => {
   }
 };
 
-const getWeightForNullDate = (dateA, dateB) => {
-  if (dateA === null && dateB === null) {
-    return 0;
-  }
-
-  if (dateA === null) {
-    return 1;
-  }
-
-  if (dateB === null) {
-    return -1;
-  }
-
-  return null;
-};
-
 export const sortByTime = (pointA, pointB) => {
-  const weight = getWeightForNullDate(pointA.dateFrom, pointB.dateTo);
+  const timeA = dayjs(pointA.dateTo).diff(dayjs(pointA.dateFrom), 'minute', true);
+  const timeB = dayjs(pointB.dateTo).diff(dayjs(pointB.dateFrom), 'minute', true);
 
-  return (
-    weight ??
-    dayjs(pointB.dateTo).diff(dayjs(pointB.dateFrom), 'minute', true) -
-      dayjs(pointA.dateTo).diff(dayjs(pointA.dateFrom), 'minute', true)
-  );
+  return timeB - timeA;
 };

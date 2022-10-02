@@ -73,5 +73,6 @@ export default class NewPointPresenter {
 
   #handleSubmitForm = (point) => {
     this.#changeData(UserAction.ADD_POINT, UpdateType.MINOR, point);
+    document.removeEventListener('keydown', this.#escKeyDownHandler);
   };
 }

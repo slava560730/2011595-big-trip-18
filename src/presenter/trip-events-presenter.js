@@ -34,8 +34,8 @@ export default class TripEventsPresenter {
 
   #pointsModel = null;
 
-  #tripOffers = null;
   #tripDestinations = null;
+  #tripOffers = null;
 
   #pointsPresenter = new Map();
   #pointNewPresenter = null;

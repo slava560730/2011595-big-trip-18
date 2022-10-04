@@ -33,11 +33,7 @@ export default class PointPresenter {
 
     this.#pointComponent = new TripItemView(point, tripOffers, tripDestinations);
 
-    this.#pointEditComponent = new EditPointView(
-      point,
-      tripOffers,
-      tripDestinations
-    );
+    this.#pointEditComponent = new EditPointView(point, tripOffers, tripDestinations);
 
     this.#pointComponent.setRollupBtnClickHandler(this.#handleOpenForm);
     this.#pointComponent.setFavoriteBtnClickHandler(this.#handleFavoriteClick);
@@ -74,6 +70,7 @@ export default class PointPresenter {
   resetView = () => {
     if (this.#mode !== Mode.DEFAULT) {
       this.#resetEditToPoint();
+      document.removeEventListener('keydown', this.#escKeyDownHandler);
     }
   };
 
